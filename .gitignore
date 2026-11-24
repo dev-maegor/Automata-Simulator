@@ -1,0 +1,5 @@
+# Local scratch files and backups
+scratch/
+*.bak
+.DS_Store
+Thumbs.db

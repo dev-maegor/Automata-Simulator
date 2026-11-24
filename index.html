@@ -1,0 +1,5116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automata Studio - DFA, NFA &amp; Null-NFA Simulator</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2319232f'/%3E%3Cstop offset='1' stop-color='%230c1117'/%3E%3C/linearGradient%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232ecc71'/%3E%3Cstop offset='1' stop-color='%2327ae60'/%3E%3C/linearGradient%3E%3ClinearGradient id='y' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f1c40f'/%3E%3Cstop offset='1' stop-color='%23f39c12'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='60' height='60' x='2' y='2' rx='14' fill='url(%23b)' stroke='%23384a5e' stroke-width='2.5'/%3E%3Cpath d='M19 25C13 13 29 13 24 24' fill='none' stroke='%2368a0d0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpolygon points='22,22 26,25 23,28' fill='%2368a0d0'/%3E%3Cpath d='M27 34Q35 27 41 33' fill='none' stroke='%23e0e8f0' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpolygon points='38,30 43,34 38,36' fill='%23e0e8f0'/%3E%3Cpath d='M6 36L14 36' stroke='%232ecc71' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpolygon points='12,32 17,36 12,40' fill='%232ecc71'/%3E%3Ccircle cx='21' cy='36' r='8' fill='url(%23g)' stroke='%23165934' stroke-width='2'/%3E%3Ccircle cx='47' cy='36' r='8.5' fill='url(%23y)' stroke='%238e6a00' stroke-width='2'/%3E%3Ccircle cx='47' cy='36' r='5.5' fill='none' stroke='%23fff' stroke-width='1.6'/%3E%3C/svg%3E">
+<style>
+:root {
+  --ui: "Segoe UI", -apple-system, BlinkMacSystemFont, Tahoma, Verdana, sans-serif;
+  --mono: "Cascadia Code", Consolas, "Courier New", monospace;
+  
+  /* Dark Theme (Default) */
+  --bg: #141816;
+  --win: #1c221e;
+  --bar: #232a26;
+  --bar-hover: #2c3530;
+  --btn: #2a332d;
+  --btn-hover: #36423a;
+  --btn-active: #3e4d44;
+  --line: #3b4740;
+  --line-strong: #4f5f56;
+  --canvas: #101311;
+  --grid: #181d19;
+  
+  --title: #1a2c3d;
+  --title-ink: #f0f4f8;
+  --ink: #e6eae4;
+  --ink2: #9aa69d;
+  --ink3: #6b776f;
+  
+  --accent: #327ec2;
+  --accent-hover: #4090d8;
+  --accent-ink: #ffffff;
+  --accent-soft: #193247;
+  
+  /* Normal State: Slate / Cyan */
+  --state: #204c5e;
+  --state-edge: #479bb8;
+  --state-ink: #edf7fa;
+  
+  /* Initial State: GREEN */
+  --init: #154627;
+  --init-edge: #22c55e;
+  --init-ink: #f0fdf4;
+  
+  /* Final State: YELLOW */
+  --final: #543f08;
+  --final-edge: #eab308;
+  --final-ink: #fefce8;
+
+  --edge: #cfd8d2;
+  --edge-sel: #38bdf8;
+  
+  --good: #22c55e;
+  --good-soft: #143520;
+  --good-edge: #2e7d32;
+  --bad: #ef4444;
+  --bad-soft: #391717;
+  --bad-edge: #c62828;
+  --warn: #f59e0b;
+  --warn-soft: #38280f;
+
+  --sim-active: #38bdf8;
+  --sim-pulse: rgba(56, 189, 248, 0.4);
+}
+
+:root[data-theme="light"] {
+  --bg: #e2e7df;
+  --win: #eff3ed;
+  --bar: #e0e5dd;
+  --bar-hover: #d4dad1;
+  --btn: #e3e8e0;
+  --btn-hover: #d6dcd3;
+  --btn-active: #c8cfc5;
+  --line: #afb8ab;
+  --line-strong: #8c9788;
+  --canvas: #fafbfa;
+  --grid: #eef2eb;
+  
+  --title: #2d4860;
+  --title-ink: #ffffff;
+  --ink: #19211c;
+  --ink2: #515d55;
+  --ink3: #7b877f;
+  
+  --accent: #2167a5;
+  --accent-hover: #185386;
+  --accent-ink: #ffffff;
+  --accent-soft: #d6e5f5;
+  
+  --state: #98cfdf;
+  --state-edge: #23657b;
+  --state-ink: #0d2833;
+  
+  /* Initial State: GREEN */
+  --init: #bbf7d0;
+  --init-edge: #15803d;
+  --init-ink: #14532d;
+  
+  /* Final State: YELLOW */
+  --final: #fef08a;
+  --final-edge: #a16207;
+  --final-ink: #713f12;
+
+  --edge: #232b26;
+  --edge-sel: #0284c7;
+  
+  --good: #16a34a;
+  --good-soft: #dcfce7;
+  --good-edge: #15803d;
+  --bad: #dc2626;
+  --bad-soft: #fee2e2;
+  --bad-edge: #b91c1c;
+  --warn: #d97706;
+  --warn-soft: #fef3c7;
+
+  --sim-active: #0284c7;
+  --sim-pulse: rgba(2, 132, 199, 0.35);
+}
+
+:root[data-theme="high-contrast"] {
+  --bg: #000000;
+  --win: #0a0a0a;
+  --bar: #141414;
+  --bar-hover: #242424;
+  --btn: #181818;
+  --btn-hover: #2e2e2e;
+  --btn-active: #404040;
+  --line: #ffffff;
+  --line-strong: #ffffff;
+  --canvas: #000000;
+  --grid: #242424;
+  
+  --title: #000000;
+  --title-ink: #ffffff;
+  --ink: #ffffff;
+  --ink2: #e0e0e0;
+  --ink3: #aaaaaa;
+  
+  --accent: #00e5ff;
+  --accent-hover: #33ebff;
+  --accent-ink: #000000;
+  --accent-soft: #002b33;
+  
+  --state: #002b4d;
+  --state-edge: #00a2ff;
+  --state-ink: #ffffff;
+  
+  /* Initial State: BOLD HIGH CONTRAST GREEN */
+  --init: #003314;
+  --init-edge: #00ff66;
+  --init-ink: #ffffff;
+  
+  /* Final State: BOLD HIGH CONTRAST YELLOW */
+  --final: #332b00;
+  --final-edge: #ffff00;
+  --final-ink: #ffffff;
+
+  --edge: #ffffff;
+  --edge-sel: #00e5ff;
+  
+  --good: #00ff66;
+  --good-soft: #002b11;
+  --good-edge: #00ff66;
+  --bad: #ff3333;
+  --bad-soft: #330000;
+  --bad-edge: #ff3333;
+  --warn: #ffff00;
+  --warn-soft: #332b00;
+
+  --sim-active: #00e5ff;
+  --sim-pulse: rgba(0, 229, 255, 0.5);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+[hidden] { display: none !important; }
+
+/* Pill Radio for Modal Selectors */
+.pill-radio {
+  cursor: pointer;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--win);
+  transition: border-color 0.15s, background 0.15s;
+}
+.pill-radio:hover {
+  border-color: var(--line-strong);
+  background: var(--bar);
+}
+.pill-radio.active, .pill-radio:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.4;
+  background: var(--bg);
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Main Full-Page Shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Header & Titlebar */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background: var(--title);
+  color: var(--title-ink);
+  border-bottom: 1px solid rgba(0,0,0,0.35);
+  flex-shrink: 0;
+  height: 32px;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.header-left svg { flex-shrink: 0; }
+.header-left .sub { opacity: 0.75; font-weight: 400; font-size: 12px; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 3px;
+  padding: 2px 10px;
+  font-size: 11.5px;
+  color: var(--title-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.header-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* Menubar */
+.menubar {
+  display: flex;
+  align-items: center;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+.menuwrap { position: relative; }
+.menubtn {
+  background: none;
+  border: 1px solid transparent;
+  padding: 3px 9px;
+  font-size: 12.5px;
+  color: var(--ink);
+  border-radius: 2px;
+}
+.menubtn:hover, .menubtn[aria-expanded="true"] {
+  background: var(--bar-hover);
+  border-color: var(--line);
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 270px;
+  background: var(--win);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  padding: 3px 0;
+  z-index: 100;
+  border-radius: 2px;
+}
+.menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 5px 14px;
+  font-size: 12px;
+  color: var(--ink);
+}
+.menu button:hover, .menu button:focus-visible {
+  background: var(--accent);
+  color: var(--accent-ink);
+  outline: none;
+}
+.menu hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 3px 0;
+}
+.menu .shortcut {
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: 0.65;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.tool {
+  width: 32px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  position: relative;
+}
+.tool svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tool:hover {
+  background: var(--btn-hover);
+  border-color: var(--line-strong);
+}
+.tool[aria-pressed="true"], .tool.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tool:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.sep {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 4px;
+}
+
+/* Alphabet Configuration in Toolbar */
+.alpha-widget {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 12px;
+}
+.alpha-label {
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.alpha-input {
+  width: 90px;
+  padding: 2px 5px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+.alpha-input:focus { border-color: var(--accent); }
+
+/* Quick Actions & View Tabs */
+.tb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.view-tabs {
+  display: flex;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px;
+  gap: 2px;
+}
+.view-tab-btn {
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.view-tab-btn:hover { color: var(--ink); }
+.view-tab-btn.active {
+  background: var(--win);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.btn {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  background: var(--btn-hover);
+  border-color: var(--line-strong);
+}
+.btn.sm { padding: 2px 8px; font-size: 11.5px; }
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.btn.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn-icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Inspector Bar */
+.inspector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding: 4px 14px;
+  background: var(--win);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink2);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.inspector strong { color: var(--ink); font-weight: 600; }
+.inspector label { display: flex; align-items: center; gap: 6px; }
+.inspector input[type="text"] {
+  width: 9ch;
+  padding: 2px 6px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--mono);
+  color: var(--ink);
+}
+.inspector input.syms { width: 14ch; }
+.pill {
+  border: 1px solid var(--line);
+  background: var(--btn);
+  border-radius: 3px;
+  padding: 2px 10px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+.pill:hover { background: var(--btn-hover); }
+.pill[aria-pressed="true"], .pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.pill.active-init {
+  background: var(--init);
+  border-color: var(--init-edge);
+  color: var(--init-ink);
+  font-weight: 600;
+}
+.pill.active-fin {
+  background: var(--final);
+  border-color: var(--final-edge);
+  color: var(--final-ink);
+  font-weight: 600;
+}
+.pill.danger { color: var(--bad); }
+.pill.danger:hover { background: var(--bad-soft); }
+
+/* Main Workspace Area */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Canvas Area */
+.canvaswrap {
+  flex: 1;
+  position: relative;
+  background: var(--canvas);
+  min-height: 140px;
+  overflow: hidden;
+}
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  background: var(--canvas);
+}
+.canvas[data-tool="state"], .canvas[data-tool="trans"] { cursor: crosshair; }
+.canvas[data-tool="del"] { cursor: not-allowed; }
+
+/* SVG Automaton Rendering */
+.st { cursor: grab; }
+.st .body {
+  fill: var(--state);
+  stroke: var(--state-edge);
+  stroke-width: 1.8;
+  transition: stroke 0.15s, fill 0.15s;
+}
+
+/* INITIAL STATE: GREEN */
+.st.init .body {
+  fill: var(--init);
+  stroke: var(--init-edge);
+  stroke-width: 2.2;
+}
+.st.init text {
+  fill: var(--init-ink);
+}
+
+/* FINAL STATE: YELLOW */
+.st.fin:not(.init) .body {
+  fill: var(--final);
+  stroke: var(--final-edge);
+  stroke-width: 2.2;
+}
+.st.fin:not(.init) text {
+  fill: var(--final-ink);
+}
+.st.fin .ring {
+  fill: none;
+  stroke: var(--final-edge);
+  stroke-width: 2px;
+}
+
+/* BOTH INITIAL & FINAL: GREEN BODY WITH YELLOW CONCENTRIC CIRCLE */
+.st.init.fin .body {
+  fill: var(--init);
+  stroke: var(--init-edge);
+  stroke-width: 2.2;
+}
+.st.init.fin .ring {
+  fill: none;
+  stroke: var(--final-edge);
+  stroke-width: 2.2px;
+}
+
+/* Initial State Arrow Indicator (Green, bold, unmistakable) */
+.st .init-arrow-group line {
+  stroke: var(--init-edge);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+}
+.st .init-arrow-group polygon {
+  fill: var(--init-edge);
+}
+
+.st text {
+  font: 600 13px var(--ui);
+  fill: var(--state-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.st text.sub { font: 11px var(--mono); fill: var(--ink2); }
+.st.sel .body { stroke: var(--edge-sel); stroke-width: 3.5; }
+
+/* Simulation highlight on canvas */
+.st.sim-active .body {
+  stroke: var(--sim-active) !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 6px var(--sim-pulse));
+}
+.st.sim-active .pulse-ring {
+  fill: none;
+  stroke: var(--sim-active);
+  stroke-width: 2px;
+  animation: pulse 1.2s infinite ease-out;
+}
+@keyframes pulse {
+  0% { r: 24px; opacity: 0.9; }
+  100% { r: 40px; opacity: 0; }
+}
+
+.edge .ln { fill: none; stroke: var(--edge); stroke-width: 1.6; transition: stroke 0.15s; }
+.edge .hit { fill: none; stroke: transparent; stroke-width: 20; pointer-events: stroke; cursor: pointer; }
+.edge .lb {
+  font: 600 12.5px var(--mono);
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+  paint-order: stroke;
+  stroke: var(--canvas);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.edge.sel .ln { stroke: var(--edge-sel); stroke-width: 2.8; }
+.edge.sim-active .ln {
+  stroke: var(--sim-active) !important;
+  stroke-width: 3.2px !important;
+  filter: drop-shadow(0 0 6px var(--sim-pulse));
+}
+
+.mk path { fill: var(--edge); }
+.mk-sel path { fill: var(--edge-sel); }
+.mk-sim path { fill: var(--sim-active); }
+.rubber { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 4; fill: none; }
+
+/* Floating Label Input for Transition */
+.lbl {
+  position: absolute;
+  z-index: 50;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  background: var(--win);
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.lbl input {
+  width: 11ch;
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--mono);
+}
+
+/* Floating Canvas Controls Overlay */
+.canvas-float {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--win);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  color: var(--ink2);
+  z-index: 10;
+}
+.canvas-float input[type="range"] {
+  width: 80px;
+  accent-color: var(--accent);
+}
+.canvas-float .hint {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* Splitter Bar */
+.splitter {
+  height: 9px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.splitter:hover, .splitter.active { background: var(--accent-soft); }
+.splitter-handle {
+  width: 40px;
+  height: 3px;
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+.splitter-title {
+  position: absolute;
+  left: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink2);
+}
+.splitter-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: 0;
+  font-size: 11.5px;
+  color: var(--ink2);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.splitter-toggle:hover { color: var(--ink); background: var(--win); }
+
+/* Bottom Dock Panel */
+.dock-panel {
+  background: var(--win);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 330px;
+  min-height: 60px;
+  max-height: 85vh;
+  flex-shrink: 0;
+}
+.dock-panel.collapsed { height: 0 !important; min-height: 0 !important; display: none; }
+
+.dock-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.dock-view {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  overflow: auto;
+}
+.dock-view.active { display: flex; }
+
+/* Simulator Tab Styles */
+.sim-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.sim-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.sim-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sim-input-wrap label { font-weight: 600; font-size: 12px; }
+.sim-input {
+  width: 200px;
+  padding: 3px 8px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+.sim-input:focus { border-color: var(--accent); }
+.sim-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.chip-btn {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink);
+}
+.chip-btn:hover { background: var(--btn-hover); border-color: var(--accent); }
+
+.sim-speed-select {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+
+/* Simulator Main Split */
+.sim-main-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+  padding: 8px 12px;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+#simStatusCol {
+  flex-shrink: 0;
+  width: 42%;
+  min-width: 250px;
+  max-width: calc(100% - 260px);
+  overflow-y: auto;
+}
+#simTraceCol {
+  flex: 1 1 0;
+  min-width: 260px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sim-col-splitter {
+  width: 12px;
+  margin: 0 2px;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+  z-index: 5;
+  border-radius: 3px;
+  transition: background 0.15s ease;
+}
+.sim-col-splitter:hover,
+.sim-col-splitter.active {
+  background: var(--accent-soft);
+}
+.sim-col-splitter-handle {
+  width: 3px;
+  height: 40px;
+  background: var(--line-strong);
+  border-radius: 2px;
+  transition: background 0.15s ease, height 0.15s ease;
+}
+.sim-col-splitter:hover .sim-col-splitter-handle,
+.sim-col-splitter.active .sim-col-splitter-handle {
+  background: var(--accent);
+  height: 60px;
+}
+@media (max-width: 800px) {
+  .sim-main-grid {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #simStatusCol {
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .sim-col-splitter {
+    height: 12px;
+    width: 100%;
+    margin: 2px 0;
+    cursor: row-resize;
+  }
+  .sim-col-splitter-handle {
+    width: 40px;
+    height: 3px;
+  }
+  #simTraceCol {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.sim-card {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.sim-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Tape Representation */
+.tape-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tape-label {
+  font-size: 11.5px;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tape-scroll-wrap {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.tape-strip {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--win);
+  padding: 2px;
+  gap: 2px;
+  min-height: 48px;
+}
+.tape-cell {
+  width: 36px;
+  height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  position: relative;
+  transition: all 0.2s;
+}
+.tape-cell.head {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: #fff;
+}
+.tape-cell.head::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 6px solid var(--accent);
+}
+.tape-cell.consumed {
+  color: var(--ink3);
+  background: rgba(0,0,0,0.2);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.tape-cell.empty-msg {
+  width: auto;
+  padding: 0 14px;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+/* Result Banner */
+.result-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--win);
+  transition: all 0.2s;
+}
+.result-banner.ready {
+  border-color: var(--line);
+  background: var(--win);
+}
+.result-banner.accepted {
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+.result-banner.rejected {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}
+.result-banner.running {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.res-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--btn);
+  color: var(--ink);
+}
+.res-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.result-banner.accepted .res-icon { background: var(--good); color: #fff; }
+.result-banner.rejected .res-icon { background: var(--bad); color: #fff; }
+.result-banner.running .res-icon { background: var(--accent); color: #fff; }
+
+.res-text { display: flex; flex-direction: column; gap: 2px; }
+.res-status { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; }
+.result-banner.accepted .res-status { color: var(--good); }
+.result-banner.rejected .res-status { color: var(--bad); }
+.result-banner.running .res-status { color: var(--accent); }
+.res-desc { font-size: 12px; color: var(--ink); }
+
+/* Execution Trace Table */
+.trace-table-wrap {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--canvas);
+}
+.trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.trace-table th, .trace-table td {
+  padding: 5px 9px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.trace-table thead th {
+  background: var(--bar);
+  color: var(--ink2);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.trace-table tbody tr { cursor: pointer; transition: background 0.15s; }
+.trace-table tbody tr:hover { background: var(--win); }
+.trace-table tbody tr.active-step {
+  background: var(--accent-soft);
+  outline: 1px solid var(--accent);
+}
+.trace-table .st-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--state);
+  color: var(--state-ink);
+  font-weight: 700;
+}
+.trace-table .st-badge.init {
+  background: var(--init);
+  border: 1px solid var(--init-edge);
+  color: var(--init-ink);
+}
+.trace-table .st-badge.fin {
+  background: var(--final);
+  border: 1px solid var(--final-edge);
+  color: var(--final-ink);
+}
+
+/* Minimizer Tab Styles */
+.min-container {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+.summary-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+.stat-box { display: flex; flex-direction: column; }
+.stat-box b { font-size: 20px; font-weight: 700; }
+.stat-box span { font-size: 11.5px; color: var(--ink2); }
+.arrowsep { font-size: 18px; color: var(--ink3); }
+
+.min-subtabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  gap: 4px;
+}
+.min-subtab-btn {
+  background: var(--bar);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--ink2);
+  border-radius: 3px 3px 0 0;
+}
+.min-subtab-btn.active {
+  background: var(--canvas);
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 1px solid var(--canvas);
+  margin-bottom: -1px;
+}
+.min-subpanel {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-top: 0;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+table.dt { border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+.dt th, .dt td { border: 1px solid var(--line); padding: 4px 10px; text-align: center; }
+.dt thead th { background: var(--bar); color: var(--ink2); }
+.dt tbody th { background: var(--bar); text-align: left; font-weight: 400; }
+.dt tr.dim td, .dt tr.dim th { color: var(--ink3); text-decoration: line-through; }
+
+/* Table filling */
+.tf { border-collapse: separate; border-spacing: 0; font-family: var(--mono); font-size: 12px; }
+.tf th { padding: 4px 8px; background: var(--bar); border: 1px solid var(--line); font-weight: 400; }
+.tf td { padding: 0; border: 1px solid var(--line); width: 42px; height: 34px; }
+.tf td.void { border: 0; background: transparent; }
+.cell {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink2);
+}
+.cell.x { color: var(--bad); font-weight: 700; }
+.cell.eq { background: var(--accent); color: #fff; font-weight: 700; }
+.cell:hover { outline: 2px solid var(--accent); }
+
+/* Transition Table Tab */
+.table-container {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+
+/* Status Bar */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 12px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--ink2);
+  flex-shrink: 0;
+  height: 24px;
+}
+.statusbar .msg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.statusbar .msg.ok { color: var(--good); font-weight: 600; }
+.statusbar .msg.err { color: var(--bad); font-weight: 600; }
+.statusbar .count { font-family: var(--mono); }
+
+/* Modal Dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0,0,0,0.65);
+}
+.dlg {
+  width: min(540px, 94vw);
+  background: var(--win);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dlg.wide { width: min(720px, 94vw); }
+.dlg-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bar);
+  font-weight: 600;
+}
+.dlg-title .x {
+  background: none;
+  border: 0;
+  font-size: 18px;
+  color: var(--ink2);
+  padding: 0 4px;
+}
+.dlg-title .x:hover { color: var(--bad); }
+.dlg-body { padding: 14px; overflow: auto; display: grid; gap: 10px; font-size: 13px; }
+.dlg-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+}
+.field { display: grid; gap: 5px; }
+.field label { font-weight: 600; font-size: 12px; }
+.field input, .field textarea {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.field textarea { min-height: 180px; resize: vertical; }
+
+/* Blocks for Moore */
+.blocks { display: flex; flex-wrap: wrap; gap: 6px; }
+.block {
+  padding: 3px 8px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.block i { font-style: normal; font-weight: 700; color: var(--accent); margin-right: 4px; }
+.chip {
+  display: inline-block;
+  padding: 2px 7px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.chip.cls { background: var(--accent-soft); border-color: var(--accent); }
+.chip.dim { opacity: 0.5; text-decoration: line-through; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Titlebar (Theme button removed as requested) -->
+  <header class="header-bar">
+    <div class="header-left">
+      <svg class="project-logo" width="22" height="22" viewBox="0 0 64 64" aria-hidden="true" style="flex-shrink:0;border-radius:5px;">
+        <defs>
+          <linearGradient id="hdrBg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#19232f"/>
+            <stop offset="100%" stop-color="#0c1117"/>
+          </linearGradient>
+          <linearGradient id="hdrInit" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#2ecc71"/>
+            <stop offset="100%" stop-color="#27ae60"/>
+          </linearGradient>
+          <linearGradient id="hdrFin" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f1c40f"/>
+            <stop offset="100%" stop-color="#f39c12"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#hdrBg)" stroke="#384a5e" stroke-width="3"/>
+        <path d="M 19 25 C 13 13, 29 13, 24 24" fill="none" stroke="#68a0d0" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="22,22 26,25 23,28" fill="#68a0d0"/>
+        <path d="M 27 34 Q 35 27 41 33" fill="none" stroke="#e0e8f0" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="38,30 43,34 38,36" fill="#e0e8f0"/>
+        <path d="M 6 36 L 14 36" stroke="#2ecc71" stroke-width="3" stroke-linecap="round"/>
+        <polygon points="12,32 17,36 12,40" fill="#2ecc71"/>
+        <circle cx="21" cy="36" r="8" fill="url(#hdrInit)" stroke="#165934" stroke-width="2.5"/>
+        <circle cx="47" cy="36" r="8.5" fill="url(#hdrFin)" stroke="#8e6a00" stroke-width="2.5"/>
+        <circle cx="47" cy="36" r="5.5" fill="none" stroke="#ffffff" stroke-width="1.8"/>
+      </svg>
+      <span>Automata Studio <span class="sub">: DFA, NFA &amp; Null-NFA Simulator</span></span>
+    </div>
+    <div class="header-right">
+      <span id="headerTypeBadge" style="font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:3px;background:rgba(255,255,255,0.08);color:var(--accent);">DFA</span>
+      <button class="header-btn" id="btnHelpTop" title="Help Guide">Help</button>
+    </div>
+  </header>
+
+  <!-- Menubar -->
+  <nav class="menubar" id="menubar" role="menubar" aria-label="Main Menu"></nav>
+
+  <!-- Main Toolbar (Move Machine tool removed as requested) -->
+  <div class="toolbar" role="toolbar" aria-label="Editor Tools">
+    <div class="tool-group">
+      <button class="tool" data-tool="select" title="Select Tool (V): Click to select & edit states or arrows, drag states to move, drag empty space to pan" aria-label="Select tool">
+        <svg viewBox="0 0 24 24"><path d="M6 3l12 9-5.2 1.2L16 20l-2.6 1-3.2-6.7L6 18z"/></svg>
+      </button>
+      <button class="tool" data-tool="state" title="State Tool (S): Click anywhere on canvas to create a new state" aria-label="Create state tool">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/></svg>
+      </button>
+      <button class="tool" data-tool="trans" title="Transition Tool (T): Drag from state to state (or loop) to create a transition (supports symbols and null ε moves)" aria-label="Create transition tool">
+        <svg viewBox="0 0 24 24"><path d="M3 12h14M12 7l5 5-5 5"/></svg>
+      </button>
+      <button class="tool" data-tool="del" title="Delete Tool (D): Click on any state or arrow to delete it" aria-label="Delete tool">
+        <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg>
+      </button>
+    </div>
+
+    <span class="sep"></span>
+
+    <div class="tool-group">
+      <button class="tool" id="btnUndo" title="Undo (Ctrl+Z)" aria-label="Undo">
+        <svg viewBox="0 0 24 24"><path d="M9 8L4 13l5 5M4 13h10a6 6 0 010 0 6 6 0 016 6"/></svg>
+      </button>
+      <button class="tool" id="btnRedo" title="Redo (Ctrl+Y)" aria-label="Redo">
+        <svg viewBox="0 0 24 24"><path d="M15 8l5 5-5 5M20 13H10a6 6 0 00-6 6"/></svg>
+      </button>
+    </div>
+
+    <span class="sep"></span>
+
+    <!-- Alphabet Configuration -->
+    <div class="alpha-widget" title="Define the Input Alphabet Σ for the automaton (ε is the null string, not an alphabet token)">
+      <span class="alpha-label">Σ = {</span>
+      <input type="text" id="alphaInput" class="alpha-input" value="0, 1" spellcheck="false" autocomplete="off" placeholder="e.g. 0, 1 or a, b">
+      <span class="alpha-label">}</span>
+      <button class="btn sm" id="btnSetAlpha" title="Apply defined alphabet">Set</button>
+      <label style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ink2);cursor:pointer;" title="Auto-sync alphabet from transitions">
+        <input type="checkbox" id="chkAutoAlpha" checked> Auto
+      </label>
+    </div>
+
+    <span class="sep"></span>
+
+    <div class="tool-group">
+      <button class="btn sm" id="btnFit" title="Fit automaton nicely to window">Fit View</button>
+    </div>
+
+    <div class="tb-right">
+      <!-- Quick String Simulator Trigger -->
+      <div style="display:flex;align-items:center;gap:4px;">
+        <input type="text" id="tbQuickInput" class="sim-input" style="width:130px;" placeholder="Input string..." value="0101">
+        <button class="btn primary sm" id="btnQuickRun" title="Run input string instantly">
+          <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg> Run
+        </button>
+      </div>
+
+      <div class="view-tabs" role="tablist">
+        <button class="view-tab-btn active" data-view="sim" role="tab" aria-selected="true">Simulator</button>
+        <button class="view-tab-btn" data-view="table" role="tab" aria-selected="false">Transition Table</button>
+        <button class="view-tab-btn" data-view="closure" role="tab" aria-selected="false">ε-Closure</button>
+        <button class="view-tab-btn" data-view="subset" role="tab" aria-selected="false">NFA → DFA (Subset)</button>
+        <button class="view-tab-btn" data-view="min" role="tab" aria-selected="false">Minimizer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inspector Bar -->
+  <div class="inspector" id="inspector" aria-live="polite">
+    <span>Select tool active. Click a state or transition to inspect and edit. Drag states to move.</span>
+  </div>
+
+  <!-- Main Canvas Workspace (Full Page Expansion) -->
+  <main class="workspace" id="workspace">
+    <div class="canvaswrap" id="canvasWrap">
+      <svg class="canvas" id="canvasSvg" data-tool="select" role="img" aria-label="Interactive Automata Canvas">
+        <defs>
+          <pattern id="gridPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+            <circle cx="15" cy="15" r="1" fill="var(--grid)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#gridPattern)" pointer-events="none"/>
+        <g id="canvasG"></g>
+      </svg>
+
+      <!-- Inline Popup for Edge Symbols with quick + ε button -->
+      <form class="lbl" id="lbl" hidden>
+        <input id="lblIn" type="text" autocomplete="off" spellcheck="false" placeholder="0, 1 or ε" aria-label="Transition symbols">
+        <button class="btn sm" type="button" id="lblAddEps" title="Insert ε (null transition)">+ ε</button>
+        <button class="btn primary sm" type="submit">OK</button>
+      </form>
+
+      <!-- Canvas Floating Zoom Widget -->
+      <div class="canvas-float">
+        <label for="zoomRange">Zoom:</label>
+        <input type="range" id="zoomRange" min="30" max="220" value="100">
+        <span id="zoomOut">100%</span>
+        <span class="sep" style="height:14px;margin:0 2px;"></span>
+        <span class="hint" id="canvasHint">Drag states to move · Drag empty space to pan</span>
+      </div>
+    </div>
+
+    <!-- Draggable Splitter Divider -->
+    <div class="splitter" id="splitter" title="Drag up/down to resize bottom dock. Double-click to collapse/expand.">
+      <div class="splitter-handle"></div>
+      <span class="splitter-title" id="splitterTitle">Interactive Simulator &amp; Execution Trace</span>
+      <button class="splitter-toggle" id="dockToggle" title="Toggle panel height">Expand</button>
+    </div>
+
+    <!-- Bottom Resizable Dock Panel -->
+    <section class="dock-panel" id="dockPanel" aria-label="Analysis & Simulation Panel">
+      <div class="dock-content">
+
+        <!-- ================= VIEW 1: INTERACTIVE SIMULATOR & TRACE ================= -->
+        <div class="dock-view active" id="viewSim" role="tabpanel">
+          <div class="sim-container">
+            <div class="sim-controls-bar">
+              <div class="sim-input-wrap">
+                <label for="simInputStr">Input String:</label>
+                <input type="text" id="simInputStr" class="sim-input" value="0101" spellcheck="false" placeholder="e.g. 010101 or empty for ε">
+              </div>
+
+              <div class="sim-chips" id="simChips">
+                <!-- Dynamically populated to match current alphabet Σ -->
+              </div>
+
+              <span class="sep"></span>
+
+              <div class="tool-group">
+                <button class="btn primary sm" id="btnSimRun" title="Run entire string and show final state">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg> Run
+                </button>
+                <button class="btn sm" id="btnSimReset" title="Reset execution to start">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><rect x="2" y="2" width="2.5" height="12"/><polygon points="14,2 5,8 14,14"/></svg> Reset
+                </button>
+                <button class="btn sm" id="btnSimPrev" title="Step backwards">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="11,3 4,8 11,13"/></svg> Step Back
+                </button>
+                <button class="btn sm" id="btnSimNext" title="Step forward one symbol">
+                  Step Forward <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="5,3 12,8 5,13"/></svg>
+                </button>
+                <button class="btn sm" id="btnSimPlay" title="Auto-play simulation steps">
+                  <span id="playIconSpan" style="display:inline-flex;align-items:center;"><svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg></span>
+                  <span id="playTextSpan">Auto Play</span>
+                </button>
+              </div>
+
+              <span class="sep"></span>
+
+              <div style="display:flex;align-items:center;gap:4px;">
+                <label for="simSpeedSelect" style="font-size:11.5px;color:var(--ink2);">Speed:</label>
+                <select id="simSpeedSelect" class="sim-speed-select">
+                  <option value="1200">Slow (1.2s)</option>
+                  <option value="600" selected>Normal (0.6s)</option>
+                  <option value="250">Fast (0.25s)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="sim-main-grid" id="simMainGrid">
+              <!-- Left Column: String Tape & Accepted/Rejected Result -->
+              <div class="sim-card" id="simStatusCol">
+                <div class="sim-card-title">
+                  <span>Simulation Status &amp; Tape</span>
+                  <span id="simStepCount" style="font-family:var(--mono);color:var(--accent);font-weight:600;">Step 0 / 0</span>
+                </div>
+
+                <!-- Tape -->
+                <div class="tape-container">
+                  <div class="tape-label">
+                    <span>Tape Head (Current Input Symbol):</span>
+                    <span id="tapePosLabel" style="font-family:var(--mono);">Head: 0</span>
+                  </div>
+                  <div class="tape-scroll-wrap">
+                    <div class="tape-strip" id="tapeStrip"></div>
+                  </div>
+                </div>
+
+                <!-- Result Banner -->
+                <div class="result-banner ready" id="resultBanner">
+                  <div class="res-icon" id="resIcon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+                  </div>
+                  <div class="res-text">
+                    <strong class="res-status" id="resStatus">READY</strong>
+                    <span class="res-desc" id="resDesc">Enter an input string and click Run or Step to simulate.</span>
+                  </div>
+                </div>
+
+                <!-- Automaton Properties Quick View -->
+                <div style="font-size:12px;color:var(--ink2);line-height:1.6;margin-top:auto;">
+                  <div>• <b>Automaton Class:</b> <span id="simTypeLabel" style="font-family:var(--mono);color:var(--accent);font-weight:700;">DFA</span></div>
+                  <div>• <b>Initial State:</b> <span id="simInitLabel" style="font-family:var(--mono);color:var(--init-edge);font-weight:600;">-</span></div>
+                  <div>• <b>Final / Accepting States:</b> <span id="simFinalsLabel" style="font-family:var(--mono);color:var(--final-edge);font-weight:600;">-</span></div>
+                  <div>• <b>Alphabet Σ:</b> <span id="simAlphaLabel" style="font-family:var(--mono);">-</span></div>
+                </div>
+              </div>
+
+              <!-- Draggable Vertical Splitter Partition -->
+              <div class="sim-col-splitter" id="simColSplitter" role="separator" aria-orientation="vertical" title="Drag left/right to resize partition. Double-click to reset (42% / 58%).">
+                <div class="sim-col-splitter-handle"></div>
+              </div>
+
+              <!-- Right Column: State-by-State Execution Trace -->
+              <div class="sim-card" id="simTraceCol">
+                <div class="sim-card-title">
+                  <span>State-by-State Execution Trace (NFA Subset / DFA Path)</span>
+                  <span style="font-size:11px;color:var(--ink2);font-weight:normal;">Click any row to jump to step</span>
+                </div>
+                <div class="trace-table-wrap">
+                  <table class="trace-table" id="traceTable">
+                    <thead>
+                      <tr>
+                        <th style="width:48px;">Step</th>
+                        <th>Active States Set</th>
+                        <th>Symbol</th>
+                        <th>Next Active States</th>
+                        <th>Remaining Tape</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="traceTableBody">
+                      <tr>
+                        <td colspan="6" style="text-align:center;color:var(--ink2);padding:24px;">No execution trace yet. Click Run or Step to start.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: MINIMIZER & EQUIVALENCE ================= -->
+        <div class="dock-view" id="viewMin" role="tabpanel">
+          <div class="min-container" id="minContainer">
+            <!-- Minimization content injected dynamically -->
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: TRANSITION TABLE ================= -->
+        <div class="dock-view" id="viewTable" role="tabpanel">
+          <div class="table-container" id="tableContainer">
+            <!-- Transition table injected dynamically -->
+          </div>
+        </div>
+
+        <!-- ================= VIEW 3: EPSILON CLOSURE ================= -->
+        <div class="dock-view" id="viewClosure" role="tabpanel">
+          <div class="closure-container" id="closureContainer" style="padding:16px;overflow:auto;">
+            <!-- Epsilon closure injected dynamically -->
+          </div>
+        </div>
+
+        <!-- ================= VIEW 4: SUBSET CONSTRUCTION ================= -->
+        <div class="dock-view" id="viewSubset" role="tabpanel">
+          <div class="subset-container" id="subsetContainer" style="padding:16px;overflow:auto;">
+            <!-- Subset construction injected dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Status Bar -->
+  <footer class="statusbar">
+    <span class="msg" id="statusMsg">Ready.</span>
+    <span class="count" id="countMsg">0 states · 0 transitions</span>
+  </footer>
+</div>
+
+<script>
+/* =========================================================================
+   Automata Studio Core - DFA, NFA & Null-NFA (ε-NFA) Algorithms
+   ========================================================================= */
+
+const DEAD = '∅';
+const R = 24; // State radius in px
+
+function sortSyms(a) { return [...new Set(a)].sort(); }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// Automaton data structure
+let dfa = {
+  states: [], // { id, x, y, initial, final }
+  trans: []   // { from, to, syms: [] }
+};
+
+// Alphabet state
+let definedAlpha = ['0', '1'];
+let autoAlpha = true;
+
+function getAlphabet() {
+  if (!autoAlpha && definedAlpha.length > 0) return [...definedAlpha];
+  const set = new Set();
+  dfa.trans.forEach(t => t.syms.forEach(s => {
+    if (s !== 'ε' && s !== 'λ') set.add(s);
+  }));
+  if (set.size === 0) return definedAlpha.length ? [...definedAlpha] : ['0', '1'];
+  return [...set].sort();
+}
+
+function getAutomatonType(automaton) {
+  let hasEps = false;
+  let hasNonDet = false;
+  const seen = {};
+  for (const t of automaton.trans) {
+    for (const a of t.syms) {
+      if (a === 'ε' || a === 'λ') hasEps = true;
+      const k = t.from + '\u0000' + a;
+      if (seen[k] !== undefined && seen[k] !== t.to) {
+        hasNonDet = true;
+      }
+      seen[k] = t.to;
+    }
+  }
+  if (hasEps) return 'Null-NFA (ε-NFA)';
+  if (hasNonDet) return 'NFA (Nondeterministic)';
+  return 'DFA (Deterministic)';
+}
+
+function runModelOf(automaton) {
+  const delta = {};
+  automaton.states.forEach(s => { delta[s.id] = {}; });
+  automaton.trans.forEach(t => {
+    t.syms.forEach(a => {
+      const sym = (a === 'λ') ? 'ε' : a;
+      if (!delta[t.from]) delta[t.from] = {};
+      if (!delta[t.from][sym]) delta[t.from][sym] = [];
+      if (!delta[t.from][sym].includes(t.to)) delta[t.from][sym].push(t.to);
+    });
+  });
+  const init = automaton.states.find(s => s.initial);
+  return {
+    init: init ? init.id : null,
+    finals: new Set(automaton.states.filter(s => s.final).map(s => s.id)),
+    delta,
+    type: getAutomatonType(automaton)
+  };
+}
+
+function validate(automaton) {
+  const errors = [];
+  if (!automaton.states.length) {
+    errors.push('Canvas has no states. Create at least one state.');
+    return errors;
+  }
+  const inits = automaton.states.filter(s => s.initial);
+  if (inits.length === 0) errors.push('No initial state selected. Mark one state as initial.');
+  else if (inits.length > 1) errors.push('Multiple initial states marked. Exactly one state can be initial.');
+  return errors;
+}
+
+/* =========================================================================
+   Epsilon Closure & Universal Simulation Engine (DFA, NFA, Null-NFA)
+   ========================================================================= */
+
+function epsilonClosure(stateSet, delta) {
+  const closure = new Set(stateSet);
+  const stack = [...stateSet];
+  while (stack.length > 0) {
+    const q = stack.pop();
+    const epsMoves = (delta[q] && delta[q]['ε']) || [];
+    for (const p of epsMoves) {
+      if (!closure.has(p)) {
+        closure.add(p);
+        stack.push(p);
+      }
+    }
+  }
+  return closure;
+}
+
+function simulateAutomaton(automaton, str, alpha) {
+  const model = runModelOf(automaton);
+  if (!model.init) {
+    return {
+      accepted: false,
+      status: 'NO_INIT',
+      reason: 'No initial state defined.',
+      trace: [],
+      automatonType: model.type
+    };
+  }
+
+  const chars = Array.from(str);
+  const trace = [];
+
+  // Step 0: Initial set is epsilon-closure of initial state
+  let currentSet = epsilonClosure([model.init], model.delta);
+  const initArr = [...currentSet].sort();
+
+  trace.push({
+    step: 0,
+    activeStates: initArr,
+    symbol: chars[0] || 'ε',
+    nextStates: initArr,
+    remaining: str || 'ε',
+    consumed: '',
+    pos: 0,
+    action: `Start: e-closure({${model.init}}) = {${initArr.join(', ')}}`,
+    status: 'START'
+  });
+
+  let stuck = false;
+  let stuckStep = null;
+  let invalidSym = null;
+
+  for (let i = 0; i < chars.length; i++) {
+    const sym = chars[i];
+    if (alpha && alpha.length && !alpha.includes(sym)) {
+      invalidSym = sym;
+    }
+
+    const directTargets = new Set();
+    for (const q of currentSet) {
+      const targets = (model.delta[q] && model.delta[q][sym]) || [];
+      targets.forEach(p => directTargets.add(p));
+    }
+
+    // Epsilon-closure of direct targets
+    const nextSet = epsilonClosure(directTargets, model.delta);
+    const nextArr = [...nextSet].sort();
+    const consumed = chars.slice(0, i + 1).join('');
+    const remaining = chars.slice(i + 1).join('') || 'ε';
+
+    if (nextSet.size === 0) {
+      stuck = true;
+      stuckStep = { sym, pos: i };
+      trace.push({
+        step: i + 1,
+        activeStates: [],
+        symbol: sym,
+        nextStates: [],
+        remaining,
+        consumed,
+        pos: i + 1,
+        action: `Read '${sym}': No valid paths forward. Active set is empty ∅`,
+        status: 'STUCK'
+      });
+      currentSet = nextSet;
+      break;
+    }
+
+    const isLast = (i === chars.length - 1);
+    const hasFinal = nextArr.some(s => model.finals.has(s));
+
+    trace.push({
+      step: i + 1,
+      activeStates: [...currentSet].sort(),
+      symbol: sym,
+      nextStates: nextArr,
+      remaining,
+      consumed,
+      pos: i + 1,
+      action: `Read '${sym}' → Active set: {${nextArr.join(', ')}}`,
+      status: isLast ? (hasFinal ? 'ACCEPTED' : 'REJECTED') : 'RUNNING'
+    });
+
+    currentSet = nextSet;
+  }
+
+  const hasAccepting = [...currentSet].some(s => model.finals.has(s));
+  let reason = '';
+  let status = '';
+
+  if (stuck) {
+    status = 'REJECTED';
+    reason = `Rejected: Computation branches died at symbol "${stuckStep.sym}" (no active paths remaining).`;
+  } else if (invalidSym) {
+    status = 'REJECTED';
+    reason = `Rejected: Symbol "${invalidSym}" is not part of the input alphabet Σ.`;
+  } else if (hasAccepting) {
+    status = 'ACCEPTED';
+    const accStates = [...currentSet].filter(s => model.finals.has(s));
+    reason = `Accepted: Final active set {${[...currentSet].sort().join(', ')}} contains accepting state(s): {${accStates.join(', ')}}.`;
+  } else {
+    status = 'REJECTED';
+    reason = `Rejected: Input exhausted, but final active set {${[...currentSet].sort().join(', ')}} contains no accepting states.`;
+  }
+
+  return {
+    accepted: hasAccepting && !stuck,
+    status,
+    reason,
+    trace,
+    finalSet: [...currentSet].sort(),
+    automatonType: model.type
+  };
+}
+
+/* =========================================================================
+   Subset Construction (NFA / Null-NFA to DFA Conversion)
+   ========================================================================= */
+
+function convertNfaToDfa(automaton, alpha) {
+  const model = runModelOf(automaton);
+  if (!model.init) return null;
+
+  const letters = alpha.filter(a => a !== 'ε' && a !== 'λ');
+  const startArr = [...epsilonClosure([model.init], model.delta)].sort();
+  const setKey = arr => arr.join(',');
+
+  const dfaStates = [];
+  const dfaTrans = [];
+  const stateMap = new Map();
+
+  const startId = 'q0';
+  stateMap.set(setKey(startArr), startId);
+  dfaStates.push({
+    id: startId,
+    label: startId,
+    members: startArr,
+    initial: true,
+    final: startArr.some(s => model.finals.has(s))
+  });
+
+  const queue = [startArr];
+  let stateCounter = 1;
+
+  while (queue.length > 0) {
+    const curArr = queue.shift();
+    const curId = stateMap.get(setKey(curArr));
+
+    for (const a of letters) {
+      const direct = new Set();
+      for (const q of curArr) {
+        const moves = (model.delta[q] && model.delta[q][a]) || [];
+        moves.forEach(m => direct.add(m));
+      }
+      const nextArr = [...epsilonClosure(direct, model.delta)].sort();
+      if (nextArr.length === 0) continue;
+
+      const k = setKey(nextArr);
+      let nextId = stateMap.get(k);
+      if (!nextId) {
+        nextId = 'q' + stateCounter++;
+        stateMap.set(k, nextId);
+        dfaStates.push({
+          id: nextId,
+          label: nextId,
+          members: nextArr,
+          initial: false,
+          final: nextArr.some(s => model.finals.has(s))
+        });
+        queue.push(nextArr);
+      }
+
+      const ex = dfaTrans.find(t => t.from === curId && t.to === nextId);
+      if (ex) {
+        if (!ex.syms.includes(a)) ex.syms.push(a);
+      } else {
+        dfaTrans.push({ from: curId, to: nextId, syms: [a] });
+      }
+    }
+  }
+
+  // Layout states in a grid
+  const cols = Math.ceil(Math.sqrt(dfaStates.length * 1.5));
+  dfaStates.forEach((s, idx) => {
+    s.x = 160 + (idx % cols) * 190;
+    s.y = 150 + Math.floor(idx / cols) * 140;
+  });
+
+  return { states: dfaStates, trans: dfaTrans };
+}
+
+/* =========================================================================
+   Minimization Core
+   ========================================================================= */
+
+function walkStr(delta, s, str) {
+  let cur = s;
+  for (const ch of Array.from(str)) {
+    if (cur === undefined) return undefined;
+    cur = delta[cur] ? delta[cur][ch] : undefined;
+  }
+  return cur;
+}
+
+function sameLanguage(A, B, alpha) {
+  const step = (M, s, a) => (s === '#' ? '#' : (M.delta[s] && M.delta[s][a] !== undefined ? M.delta[s][a] : '#'));
+  const acc = (M, s) => s !== '#' && M.finals.has(s);
+  const seen = new Set([A.init + '|' + B.init]);
+  const q = [[A.init, B.init]];
+  for (let i = 0; i < q.length; i++) {
+    const [x, y] = q[i];
+    if (acc(A, x) !== acc(B, y)) return false;
+    for (const a of alpha) {
+      const nx = step(A, x, a), ny = step(B, y, a);
+      const k = nx + '|' + ny;
+      if (!seen.has(k)) { seen.add(k); q.push([nx, ny]); }
+    }
+  }
+  return true;
+}
+
+function minimize(automaton) {
+  const errors = validate(automaton);
+  const res = { errors };
+  if (errors.length) return res;
+
+  const alpha = getAlphabet();
+  let workingAutomaton = automaton;
+  const originalType = getAutomatonType(automaton);
+
+  // If automaton is an NFA or Null-NFA, convert to equivalent DFA first via subset construction
+  if (originalType !== 'DFA (Deterministic)') {
+    const dfaConverted = convertNfaToDfa(automaton, alpha);
+    if (!dfaConverted || !dfaConverted.states.length) {
+      res.errors.push('Could not convert NFA to DFA: No initial state or unreachable paths.');
+      return res;
+    }
+    workingAutomaton = dfaConverted;
+  }
+
+  // Model of the deterministic automaton
+  const deltaSingle = {};
+  workingAutomaton.states.forEach(s => { deltaSingle[s.id] = {}; });
+  workingAutomaton.trans.forEach(t => {
+    t.syms.forEach(a => {
+      if (deltaSingle[t.from]) deltaSingle[t.from][a] = t.to;
+    });
+  });
+  const initSt = workingAutomaton.states.find(s => s.initial);
+  const m = {
+    init: initSt ? initSt.id : null,
+    finals: new Set(workingAutomaton.states.filter(s => s.final).map(s => s.id)),
+    delta: deltaSingle
+  };
+
+  const ids = workingAutomaton.states.map(s => s.id);
+
+  // 1. BFS reachability from initial state
+  const bfs = [m.init];
+  const seenSet = new Set(bfs);
+  for (let i = 0; i < bfs.length; i++) {
+    for (const a of alpha) {
+      const t = m.delta[bfs[i]] ? m.delta[bfs[i]][a] : undefined;
+      if (t !== undefined && !seenSet.has(t)) {
+        seenSet.add(t);
+        bfs.push(t);
+      }
+    }
+  }
+  const order = ids.filter(i => seenSet.has(i));
+  const unreachable = ids.filter(i => !seenSet.has(i));
+
+  // 2. Complete with dead state if incomplete
+  const states = order.slice();
+  const delta = {};
+  order.forEach(s => { delta[s] = Object.assign({}, m.delta[s]); });
+  const finals = new Set([...m.finals].filter(s => seenSet.has(s)));
+  const incomplete = order.some(s => alpha.some(a => m.delta[s][a] === undefined));
+  if (incomplete) {
+    states.push(DEAD);
+    delta[DEAD] = {};
+    alpha.forEach(a => { delta[DEAD][a] = DEAD; });
+    order.forEach(s => alpha.forEach(a => { if (delta[s][a] === undefined) delta[s][a] = DEAD; }));
+  }
+
+  // 3. Table-filling algorithm
+  const n = states.length;
+  const idx = {};
+  states.forEach((s, i) => { idx[s] = i; });
+  const key = (i, j) => (i > j ? i + ',' + j : j + ',' + i);
+  const marks = new Map();
+  const pairs = [];
+  for (let i = 1; i < n; i++) for (let j = 0; j < i; j++) pairs.push([i, j]);
+  for (const [i, j] of pairs) {
+    if (finals.has(states[i]) !== finals.has(states[j])) {
+      marks.set(key(i, j), { i, j, round: 0, sym: null, witness: '' });
+    }
+  }
+  let round = 0;
+  for (;;) {
+    round++;
+    const add = [];
+    for (const [i, j] of pairs) {
+      if (marks.has(key(i, j))) continue;
+      for (const a of alpha) {
+        const p = idx[delta[states[i]][a]], q = idx[delta[states[j]][a]];
+        if (p === q) continue;
+        const mk = marks.get(key(p, q));
+        if (mk && mk.round < round) {
+          add.push({ i, j, round, sym: a, next: [Math.max(p, q), Math.min(p, q)], witness: a + mk.witness });
+          break;
+        }
+      }
+    }
+    if (!add.length) break;
+    add.forEach(x => marks.set(key(x.i, x.j), x));
+  }
+  const maxRound = round - 1;
+  const roundCounts = [];
+  for (let r = 0; r <= maxRound; r++) roundCounts.push([...marks.values()].filter(x => x.round === r).length);
+
+  // 4. Equivalence classes
+  const cls = new Array(n).fill(null);
+  let nc = 0;
+  for (let i = 0; i < n; i++) {
+    if (cls[i] !== null) continue;
+    cls[i] = nc;
+    for (let j = i + 1; j < n; j++) if (cls[j] === null && !marks.has(key(j, i))) cls[j] = nc;
+    nc++;
+  }
+  const bfs2 = [m.init];
+  const seen2 = new Set(bfs2);
+  for (let i = 0; i < bfs2.length; i++) for (const a of alpha) {
+    const t = delta[bfs2[i]][a];
+    if (!seen2.has(t)) { seen2.add(t); bfs2.push(t); }
+  }
+  const classOrder = [];
+  bfs2.forEach(s => { if (!classOrder.includes(cls[idx[s]])) classOrder.push(cls[idx[s]]); });
+  const classes = classOrder.map(c => states.filter((s, i) => cls[i] === c));
+
+  // 5. Partition refinement (Moore's algorithm)
+  let blocks = [states.filter(s => finals.has(s)), states.filter(s => !finals.has(s))].filter(b => b.length);
+  const rounds = [{ blocks: blocks.map(b => b.slice()), stable: false, sigs: null, prev: null }];
+  for (;;) {
+    const bi = {};
+    blocks.forEach((b, k) => b.forEach(s => { bi[s] = k; }));
+    const sigs = {};
+    const next = [];
+    let changed = false;
+    blocks.forEach(b => {
+      const groups = new Map();
+      b.forEach(s => {
+        const sig = alpha.map(a => bi[delta[s][a]]);
+        sigs[s] = sig;
+        const k = sig.join('|');
+        if (!groups.has(k)) groups.set(k, []);
+        groups.get(k).push(s);
+      });
+      if (groups.size > 1) changed = true;
+      groups.forEach(g => next.push(g));
+    });
+    rounds.push({ prev: blocks.map(b => b.slice()), sigs, blocks: next.map(b => b.slice()), stable: !changed });
+    if (!changed) break;
+    blocks = next;
+  }
+  const partitionKey = bl => bl.map(b => b.slice().sort().join(',')).sort().join(';');
+  const agree = partitionKey(blocks) === partitionKey(classes);
+
+  // 6. Minimal DFA
+  const minStates = classes.map((members, k) => ({
+    id: 'Q' + k,
+    members: members.filter(s => s !== DEAD || members.length === 1),
+    initial: members.includes(m.init),
+    final: finals.has(members[0]),
+    implicitDead: members.length === 1 && members[0] === DEAD
+  }));
+  const clsId = {};
+  classes.forEach((mem, k) => mem.forEach(s => { clsId[s] = 'Q' + k; }));
+  const edgeMap = new Map();
+  classes.forEach((mem, k) => {
+    alpha.forEach(a => {
+      const to = clsId[delta[mem[0]][a]];
+      const kk = 'Q' + k + '>' + to;
+      if (!edgeMap.has(kk)) edgeMap.set(kk, { from: 'Q' + k, to, syms: [] });
+      edgeMap.get(kk).syms.push(a);
+    });
+  });
+  const minTrans = [...edgeMap.values()];
+
+  // Run model of minDfa
+  const minDelta = {};
+  minStates.forEach(s => { minDelta[s.id] = {}; });
+  minTrans.forEach(t => t.syms.forEach(a => { minDelta[t.from][a] = t.to; }));
+  const minInit = minStates.find(s => s.initial);
+  const minRun = {
+    init: minInit ? minInit.id : null,
+    finals: new Set(minStates.filter(s => s.final).map(s => s.id)),
+    delta: minDelta
+  };
+  const origRun = { init: m.init, finals, delta };
+
+  Object.assign(res, {
+    originalType,
+    alpha, bfs, order, unreachable, incomplete, states, delta, finals: [...finals],
+    table: { states, marks: [...marks.values()], maxRound, roundCounts },
+    classes, partition: { rounds }, agree,
+    min: { states: minStates, trans: minTrans, run: minRun },
+    verified: sameLanguage(origRun, minRun, alpha)
+  });
+  return res;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { minimize, validate, runModelOf, simulateAutomaton, convertNfaToDfa, walkStr, sameLanguage, sortSyms, DEAD };
+}
+
+/* =========================================================================
+   UI Application Controller
+   ========================================================================= */
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// State variables
+let tool = 'select'; // 'select' | 'state' | 'trans' | 'del'
+let sel = null;       // { type: 'state', id } or { type: 'edge', from, to }
+let drag = null;
+let link = null;
+const hist = { undo: [], redo: [] };
+let recTimer = null;
+let minResult = null;
+let activeDockTab = 'sim';
+
+// Simulator runtime state
+const simState = {
+  result: null,
+  curStep: 0,
+  isPlaying: false,
+  timer: null,
+  speed: 600
+};
+
+// Canvas View coordinates
+const canvasView = {
+  svg: $('#canvasSvg'),
+  g: $('#canvasG'),
+  z: 1,
+  ox: 0,
+  oy: 0
+};
+
+/* ---------- Rich Pre-Generated Automata Library (DFA, NFA, Null-NFA) ---------- */
+const EXAMPLES = {
+  seven: {
+    name: 'DFA: 7 States (Minimization Benchmark)',
+    type: 'DFA',
+    sample: '0101',
+    states: [
+      { id: 'q0', x: 130, y: 220, initial: true, final: false },
+      { id: 'q1', x: 130, y: 90, initial: false, final: false },
+      { id: 'q2', x: 330, y: 280, initial: false, final: true },
+      { id: 'q3', x: 330, y: 130, initial: false, final: true },
+      { id: 'q4', x: 550, y: 200, initial: false, final: true },
+      { id: 'q5', x: 770, y: 200, initial: false, final: false },
+      { id: 'q6', x: 550, y: 350, initial: false, final: false }
+    ],
+    trans: [
+      { from: 'q0', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'q0', syms: ['0'] },
+      { from: 'q0', to: 'q2', syms: ['1'] },
+      { from: 'q1', to: 'q3', syms: ['1'] },
+      { from: 'q2', to: 'q4', syms: ['0'] },
+      { from: 'q2', to: 'q5', syms: ['1'] },
+      { from: 'q3', to: 'q4', syms: ['0'] },
+      { from: 'q3', to: 'q5', syms: ['1'] },
+      { from: 'q4', to: 'q4', syms: ['0'] },
+      { from: 'q4', to: 'q5', syms: ['1'] },
+      { from: 'q5', to: 'q5', syms: ['0', '1'] },
+      { from: 'q6', to: 'q6', syms: ['0'] },
+      { from: 'q6', to: 'q5', syms: ['1'] }
+    ]
+  },
+  ends01: {
+    name: "DFA: Binary Strings Ending in '01'",
+    type: 'DFA',
+    sample: '10001',
+    states: [
+      { id: 'q0', x: 160, y: 220, initial: true, final: false },
+      { id: 'q1', x: 380, y: 220, initial: false, final: false },
+      { id: 'q2', x: 600, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q0', syms: ['1'] },
+      { from: 'q0', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'q2', syms: ['1'] },
+      { from: 'q2', to: 'q0', syms: ['1'] },
+      { from: 'q2', to: 'q1', syms: ['0'] }
+    ]
+  },
+  even01: {
+    name: 'DFA: Even 0s and Even 1s (Parity)',
+    type: 'DFA',
+    sample: '1010',
+    states: [
+      { id: 'qEE', x: 200, y: 140, initial: true, final: true },
+      { id: 'qOE', x: 440, y: 140, initial: false, final: false },
+      { id: 'qEO', x: 200, y: 320, initial: false, final: false },
+      { id: 'qOO', x: 440, y: 320, initial: false, final: false }
+    ],
+    trans: [
+      { from: 'qEE', to: 'qOE', syms: ['0'] },
+      { from: 'qOE', to: 'qEE', syms: ['0'] },
+      { from: 'qEO', to: 'qOO', syms: ['0'] },
+      { from: 'qOO', to: 'qEO', syms: ['0'] },
+      { from: 'qEE', to: 'qEO', syms: ['1'] },
+      { from: 'qEO', to: 'qEE', syms: ['1'] },
+      { from: 'qOE', to: 'qOO', syms: ['1'] },
+      { from: 'qOO', to: 'qOE', syms: ['1'] }
+    ]
+  },
+  div3: {
+    name: 'DFA: Binary Numbers Divisible by 3',
+    type: 'DFA',
+    sample: '110', // 6 in decimal (mod 3 = 0)
+    states: [
+      { id: 'rem0', x: 180, y: 220, initial: true, final: true },
+      { id: 'rem1', x: 400, y: 130, initial: false, final: false },
+      { id: 'rem2', x: 400, y: 310, initial: false, final: false }
+    ],
+    trans: [
+      { from: 'rem0', to: 'rem0', syms: ['0'] },
+      { from: 'rem0', to: 'rem1', syms: ['1'] },
+      { from: 'rem1', to: 'rem2', syms: ['0'] },
+      { from: 'rem1', to: 'rem0', syms: ['1'] },
+      { from: 'rem2', to: 'rem1', syms: ['0'] },
+      { from: 'rem2', to: 'rem2', syms: ['1'] }
+    ]
+  },
+  substr_aba: {
+    name: "DFA: Strings Containing Substring 'aba'",
+    type: 'DFA',
+    sample: 'bbaababb',
+    states: [
+      { id: 'q0', x: 150, y: 220, initial: true, final: false },
+      { id: 'q1', x: 330, y: 220, initial: false, final: false },
+      { id: 'q2', x: 510, y: 220, initial: false, final: false },
+      { id: 'q3', x: 690, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q0', syms: ['b'] },
+      { from: 'q0', to: 'q1', syms: ['a'] },
+      { from: 'q1', to: 'q1', syms: ['a'] },
+      { from: 'q1', to: 'q2', syms: ['b'] },
+      { from: 'q2', to: 'q1', syms: ['b'] },
+      { from: 'q2', to: 'q3', syms: ['a'] },
+      { from: 'q3', to: 'q3', syms: ['a', 'b'] }
+    ]
+  },
+  nfa_ends01: {
+    name: "NFA: Binary Strings Ending in '01'",
+    type: 'NFA',
+    sample: '00101',
+    states: [
+      { id: 'q0', x: 180, y: 220, initial: true, final: false },
+      { id: 'q1', x: 400, y: 220, initial: false, final: false },
+      { id: 'q2', x: 620, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q0', syms: ['0', '1'] }, // Loop on both
+      { from: 'q0', to: 'q1', syms: ['0'] },      // Non-deterministic branch on 0
+      { from: 'q1', to: 'q2', syms: ['1'] }
+    ]
+  },
+  nfa_substr_00: {
+    name: "NFA: Contains '00' or '11'",
+    type: 'NFA',
+    sample: '010110',
+    states: [
+      { id: 'q0', x: 160, y: 220, initial: true, final: false },
+      { id: 'q00', x: 380, y: 130, initial: false, final: false },
+      { id: 'q11', x: 380, y: 310, initial: false, final: false },
+      { id: 'qMatch', x: 600, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q0', syms: ['0', '1'] },
+      { from: 'q0', to: 'q00', syms: ['0'] },
+      { from: 'q0', to: 'q11', syms: ['1'] },
+      { from: 'q00', to: 'qMatch', syms: ['0'] },
+      { from: 'q11', to: 'qMatch', syms: ['1'] },
+      { from: 'qMatch', to: 'qMatch', syms: ['0', '1'] }
+    ]
+  },
+  null_nfa_star: {
+    name: "Null-NFA (ε-NFA): (0|1)*01 with ε-Transitions",
+    type: 'Null-NFA',
+    sample: '101',
+    states: [
+      { id: 'start', x: 120, y: 220, initial: true, final: false },
+      { id: 'loop0', x: 280, y: 140, initial: false, final: false },
+      { id: 'loop1', x: 280, y: 300, initial: false, final: false },
+      { id: 'mid', x: 440, y: 220, initial: false, final: false },
+      { id: 'q1', x: 580, y: 220, initial: false, final: false },
+      { id: 'qAccept', x: 740, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'start', to: 'loop0', syms: ['ε'] },
+      { from: 'start', to: 'loop1', syms: ['ε'] },
+      { from: 'loop0', to: 'mid', syms: ['0'] },
+      { from: 'loop1', to: 'mid', syms: ['1'] },
+      { from: 'mid', to: 'start', syms: ['ε'] },
+      { from: 'mid', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'qAccept', syms: ['1'] }
+    ]
+  },
+  null_nfa_abc: {
+    name: "Null-NFA (ε-NFA): a* b* c* with Null Moves",
+    type: 'Null-NFA',
+    sample: 'aaabbc',
+    states: [
+      { id: 'qA', x: 180, y: 220, initial: true, final: false },
+      { id: 'qB', x: 420, y: 220, initial: false, final: false },
+      { id: 'qC', x: 660, y: 220, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'qA', to: 'qA', syms: ['a'] },
+      { from: 'qA', to: 'qB', syms: ['ε'] },
+      { from: 'qB', to: 'qB', syms: ['b'] },
+      { from: 'qB', to: 'qC', syms: ['ε'] },
+      { from: 'qC', to: 'qC', syms: ['c'] }
+    ]
+  },
+  partial: {
+    name: 'DFA: Incomplete Transitions (Dead State)',
+    type: 'DFA',
+    sample: 'abbb',
+    states: [
+      { id: 'q0', x: 140, y: 200, initial: true, final: false },
+      { id: 'q1', x: 360, y: 120, initial: false, final: true },
+      { id: 'q2', x: 360, y: 280, initial: false, final: true },
+      { id: 'q3', x: 620, y: 200, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q1', syms: ['a'] },
+      { from: 'q1', to: 'q2', syms: ['b'] },
+      { from: 'q2', to: 'q1', syms: ['b'] },
+      { from: 'q3', to: 'q3', syms: ['a'] }
+    ]
+  }
+};
+
+function loadExample(key) {
+  const ex = EXAMPLES[key];
+  if (!ex) return;
+  dfa = {
+    states: ex.states.map(s => Object.assign({}, s)),
+    trans: ex.trans.map(t => ({ from: t.from, to: t.to, syms: sortSyms(t.syms) }))
+  };
+  hist.undo.length = 0;
+  hist.redo.length = 0;
+  sel = null;
+  $('#simInputStr').value = ex.sample;
+  $('#tbQuickInput').value = ex.sample;
+  syncAlphabetFromTransitions();
+  afterChange(true);
+  fitView();
+  showToast(`Loaded ${ex.name}`, 'ok');
+}
+
+function clearAutomaton() {
+  mutate(() => {
+    dfa = { states: [], trans: [] };
+    sel = null;
+  });
+  setTool('state');
+  showToast('Canvas cleared. Click to place your first state.');
+}
+
+/* ---------- Canvas View (Pan / Zoom) ---------- */
+function applyView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  canvasView.svg.setAttribute('viewBox', `${canvasView.ox} ${canvasView.oy} ${w / canvasView.z} ${h / canvasView.z}`);
+  const pct = Math.round(canvasView.z * 100);
+  $('#zoomRange').value = pct;
+  $('#zoomOut').textContent = pct + '%';
+}
+
+function setZoom(z, cx, cy) {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  if (cx === undefined) cx = canvasView.ox + w / (2 * canvasView.z);
+  if (cy === undefined) cy = canvasView.oy + h / (2 * canvasView.z);
+  
+  canvasView.z = Math.max(0.3, Math.min(2.5, z));
+  canvasView.ox = cx - w / (2 * canvasView.z);
+  canvasView.oy = cy - h / (2 * canvasView.z);
+  applyView();
+}
+
+function fitView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  if (!dfa.states.length) {
+    canvasView.z = 1; canvasView.ox = 0; canvasView.oy = 0;
+    applyView(); return;
+  }
+  const xs = dfa.states.map(s => s.x);
+  const ys = dfa.states.map(s => s.y);
+  const minx = Math.min(...xs) - R - 60;
+  const maxx = Math.max(...xs) + R + 60;
+  const miny = Math.min(...ys) - R - 60;
+  const maxy = Math.max(...ys) + R + 60;
+  const gw = maxx - minx || 200;
+  const gh = maxy - miny || 200;
+  canvasView.z = Math.max(0.35, Math.min(1.4, w / gw, h / gh));
+  canvasView.ox = (minx + maxx) / 2 - w / (2 * canvasView.z);
+  canvasView.oy = (miny + maxy) / 2 - h / (2 * canvasView.z);
+  applyView();
+}
+
+function centerView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  canvasView.ox = -w / (2 * canvasView.z);
+  canvasView.oy = -h / (2 * canvasView.z);
+  applyView();
+}
+
+function toModel(e) {
+  const pt = canvasView.svg.createSVGPoint();
+  pt.x = e.clientX;
+  pt.y = e.clientY;
+  const m = canvasView.svg.getScreenCTM();
+  if (!m) return { x: 0, y: 0 };
+  const p = pt.matrixTransform(m.inverse());
+  return { x: p.x, y: p.y };
+}
+
+window.addEventListener('resize', applyView);
+if (window.ResizeObserver) {
+  new ResizeObserver(applyView).observe(canvasView.svg);
+}
+
+/* ---------- Drawing Engine ---------- */
+function computeOptimalLoopAngle(state, pos, automatonTrans) {
+  const selfTrans = automatonTrans.find(t => t.from === state.id && t.to === state.id);
+  if (selfTrans && selfTrans.loopAngle != null) {
+    return selfTrans.loopAngle;
+  }
+
+  const occupied = [];
+
+  // 1. Initial arrow strictly enters from left (Math.PI / 180 deg)
+  if (state.initial) {
+    occupied.push({ angle: Math.PI, type: 'initial' });
+  }
+
+  // 2. Non-loop transitions connected to this state
+  automatonTrans.forEach(u => {
+    if (u.from === state.id && u.to !== state.id) {
+      const p = pos.get(u.to);
+      if (p) occupied.push({ angle: Math.atan2(p.y - state.y, p.x - state.x), type: 'outgoing' });
+    } else if (u.to === state.id && u.from !== state.id) {
+      const p = pos.get(u.from);
+      if (p) occupied.push({ angle: Math.atan2(p.y - state.y, p.x - state.x), type: 'incoming' });
+    }
+  });
+
+  if (occupied.length === 0) return -Math.PI / 2; // Default top
+
+  const norm = a => {
+    let r = a % (2 * Math.PI);
+    if (r < 0) r += 2 * Math.PI;
+    return r;
+  };
+
+  const angDist = (a1, a2) => {
+    const diff = Math.abs(norm(a1) - norm(a2));
+    return Math.min(diff, 2 * Math.PI - diff);
+  };
+
+  let bestAngle = -Math.PI / 2;
+  let bestScore = -Infinity;
+
+  // Sample 72 candidates around circle (every 5 degrees)
+  for (let i = 0; i < 72; i++) {
+    const cand = (i / 72) * 2 * Math.PI;
+
+    let minClearance = Infinity;
+    for (const occ of occupied) {
+      const d = angDist(cand, occ.angle);
+      if (d < minClearance) minClearance = d;
+    }
+
+    // Heavy penalty if closer than 45 deg to any connected transition arrow
+    let penalty = 0;
+    if (minClearance < (45 * Math.PI / 180)) {
+      penalty += (45 * Math.PI / 180 - minClearance) * 25;
+    }
+    // Strict avoidance of initial arrow on left (180 deg)
+    if (state.initial && angDist(cand, Math.PI) < (60 * Math.PI / 180)) {
+      penalty += 100;
+    }
+
+    // Top preference: in diagrams, TOP (-PI/2) is standard when space is clear
+    const topDist = angDist(cand, -Math.PI / 2);
+    const topAffinity = (Math.PI - topDist) / Math.PI;
+
+    const clearanceScore = Math.min(minClearance, 90 * Math.PI / 180);
+    const score = clearanceScore * 0.5 + topAffinity * 1.5 - penalty;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestAngle = cand;
+    }
+  }
+
+  if (bestAngle > Math.PI) bestAngle -= 2 * Math.PI;
+  return bestAngle;
+}
+
+function redrawCanvas() {
+  const pos = new Map(dfa.states.map(s => [s.id, s]));
+  const pairs = new Set(dfa.trans.map(t => t.from + '\u0001' + t.to));
+  
+  // Set of states active in current simulation step (for NFA, can be multiple!)
+  const activeStep = (simState.result && simState.result.trace && simState.result.trace[simState.curStep]) || null;
+  const activeStates = activeStep ? activeStep.activeStates : [];
+  const activeSymbol = activeStep ? activeStep.symbol : null;
+  const nextStates = activeStep ? (activeStep.nextStates || []) : [];
+
+  let out = `
+    <defs>
+      <marker id="ae" class="mk" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="11" markerHeight="9" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+      <marker id="aes" class="mk mk-sel" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="11" markerHeight="9" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+      <marker id="aesim" class="mk mk-sim" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="12" markerHeight="10" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+    </defs>
+  `;
+
+  // Draw Transitions (Edges)
+  dfa.trans.forEach((t, k) => {
+    const a = pos.get(t.from);
+    const b = pos.get(t.to);
+    if (!a || !b) return;
+
+    const lab = t.syms.join(',');
+    const isSel = sel && sel.type === 'edge' && sel.from === t.from && sel.to === t.to;
+    
+    // Highlight edge in simulation if traversed
+    const isSimActive = activeStep && activeStep.step > 0 &&
+                        activeStates.includes(t.from) && nextStates.includes(t.to) &&
+                        (t.syms.includes(activeSymbol) || t.syms.includes('ε') || t.syms.includes('λ'));
+
+    let d, lx, ly;
+
+    if (t.from === t.to) {
+      // Self loop - intelligently positioned to never collide with incoming/outgoing transitions or initial arrow
+      const th = computeOptimalLoopAngle(a, pos, dfa.trans);
+      const P = (ang, r) => [a.x + r * Math.cos(ang), a.y + r * Math.sin(ang)];
+      const p1 = P(th - 0.48, R), p2 = P(th + 0.48, R + 1);
+      const c1 = P(th - 0.36, R + 46), c2 = P(th + 0.36, R + 46);
+      const lp = P(th, R + 48);
+
+      d = `M ${p1[0]} ${p1[1]} C ${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${p2[0]} ${p2[1]}`;
+      lx = lp[0]; ly = lp[1];
+    } else {
+      // Directed Edge between two distinct states
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const px = -dy / len, py = dx / len;
+      const rev = pairs.has(t.to + '\u0001' + t.from);
+      const bend = rev ? 26 : (t.bend || 0);
+
+      const cx = (a.x + b.x) / 2 + px * bend * 2;
+      const cy = (a.y + b.y) / 2 + py * bend * 2;
+
+      let ux = cx - a.x, uy = cy - a.y, ul = Math.hypot(ux, uy) || 1;
+      ux /= ul; uy /= ul;
+      let vx = cx - b.x, vy = cy - b.y, vl = Math.hypot(vx, vy) || 1;
+      vx /= vl; vy /= vl;
+
+      const sx = a.x + ux * R, sy = a.y + uy * R;
+      const ex = b.x + vx * (R + 1), ey = b.y + vy * (R + 1);
+
+      d = `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`;
+      const mx = 0.25 * sx + 0.5 * cx + 0.25 * ex;
+      const my = 0.25 * sy + 0.5 * cy + 0.25 * ey;
+
+      let nx = px, ny = py;
+      if (!bend) {
+        if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny; }
+      } else if (bend < 0) {
+        nx = -nx; ny = -ny;
+      }
+      lx = mx + nx * 14;
+      ly = my + ny * 14;
+    }
+
+    const markerId = isSimActive ? 'aesim' : (isSel ? 'aes' : 'ae');
+    out += `
+      <g class="edge ${isSel ? 'sel' : ''} ${isSimActive ? 'sim-active' : ''}" data-ed="${k}">
+        <path class="hit" d="${d}"/>
+        <path class="ln" d="${d}" marker-end="url(#${markerId})"/>
+        <text class="lb" x="${lx}" y="${ly}">${esc(lab)}</text>
+      </g>
+    `;
+  });
+
+  // Draw in-progress rubber band link
+  if (link) {
+    out += `<line class="rubber" x1="${link.x1}" y1="${link.y1}" x2="${link.x2}" y2="${link.y2}"/>`;
+  }
+
+  // Draw States
+  dfa.states.forEach(s => {
+    const isSel = sel && sel.type === 'state' && sel.id === s.id;
+    const isSimActive = (activeStates && activeStates.includes(s.id));
+
+    // Initial arrow: Solid green line pointing directly to circle perimeter with arrow head
+    const initialArrow = s.initial ? `
+      <g class="init-arrow-group" pointer-events="none">
+        <line x1="${-R - 28}" y1="0" x2="${-R - 2}" y2="0"/>
+        <polygon points="${-R - 14},-7 ${-R - 2},0 ${-R - 14},7"/>
+      </g>
+    ` : '';
+
+    out += `
+      <g class="st ${s.initial ? 'init' : ''} ${s.final ? 'fin' : ''} ${isSel ? 'sel' : ''} ${isSimActive ? 'sim-active' : ''}" data-st="${esc(s.id)}" transform="translate(${s.x} ${s.y})">
+        ${isSimActive ? '<circle class="pulse-ring" r="24"/>' : ''}
+        ${initialArrow}
+        <circle class="body" r="${R}"/>
+        ${s.final ? '<circle class="ring" r="' + (R - 5) + '"/>' : ''}
+        <text>${esc(s.label || s.id)}</text>
+        ${s.sub ? '<text class="sub" y="' + (R + 17) + '">' + esc(s.sub) + '</text>' : ''}
+      </g>
+    `;
+  });
+
+  canvasView.g.innerHTML = out;
+}
+
+/* ---------- Status & Inspector Updates ---------- */
+function getToolHint() {
+  switch (tool) {
+    case 'select': return 'Select: Click to select/edit states or arrows, drag states to move, drag empty space to pan.';
+    case 'state': return 'State Tool: Click anywhere on the canvas to add a new state.';
+    case 'trans': return 'Transition Tool: Click & drag from one state to another (or onto itself) to add a transition.';
+    case 'del': return 'Delete Tool: Click a state or transition arrow to remove it.';
+    default: return '';
+  }
+}
+
+function showToast(msg, kind) {
+  const el = $('#statusMsg');
+  el.textContent = msg;
+  el.className = 'msg' + (kind ? ' ' + kind : '');
+}
+
+function updateCountsAndSummary() {
+  const alpha = getAlphabet();
+  const autoType = getAutomatonType(dfa);
+  $('#countMsg').textContent = `${dfa.states.length} states · ${dfa.trans.length} transitions · Σ = {${alpha.join(', ')}}`;
+  $('#headerTypeBadge').textContent = autoType;
+  $('#simTypeLabel').textContent = autoType;
+  $('#simInitLabel').textContent = (dfa.states.find(s => s.initial) || {}).id || 'None';
+  $('#simFinalsLabel').textContent = dfa.states.filter(s => s.final).map(s => s.id).join(', ') || 'None';
+  $('#simAlphaLabel').textContent = `{${alpha.join(', ')}}`;
+  if (autoAlpha) {
+    $('#alphaInput').value = alpha.join(', ');
+  }
+}
+
+function updateUndoRedo() {
+  $('#btnUndo').disabled = !hist.undo.length;
+  $('#btnRedo').disabled = !hist.redo.length;
+}
+
+function mutate(fn) {
+  hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  if (hist.undo.length > 80) hist.undo.shift();
+  hist.redo.length = 0;
+  fn();
+  afterChange();
+}
+
+function undo() {
+  if (!hist.undo.length) return;
+  hist.redo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  const state = JSON.parse(hist.undo.pop());
+  dfa = state.dfa;
+  if (state.definedAlpha) definedAlpha = state.definedAlpha;
+  if (state.autoAlpha !== undefined) autoAlpha = state.autoAlpha;
+  fixSel();
+  afterChange(true);
+}
+
+function redo() {
+  if (!hist.redo.length) return;
+  hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  const state = JSON.parse(hist.redo.pop());
+  dfa = state.dfa;
+  if (state.definedAlpha) definedAlpha = state.definedAlpha;
+  if (state.autoAlpha !== undefined) autoAlpha = state.autoAlpha;
+  fixSel();
+  afterChange(true);
+}
+
+function fixSel() {
+  if (!sel) return;
+  if (sel.type === 'state' && !dfa.states.some(s => s.id === sel.id)) sel = null;
+  if (sel && sel.type === 'edge' && !dfa.trans.some(t => t.from === sel.from && t.to === sel.to)) sel = null;
+}
+
+/* ---------- Local Storage Persistence Engine ---------- */
+const STORAGE_KEY = 'automata_studio_saved_state_v1';
+let saveTimer = null;
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveToStorage, 180);
+}
+
+function saveToStorage() {
+  try {
+    const data = {
+      dfa,
+      definedAlpha,
+      autoAlpha,
+      simInputStr: $('#simInputStr') ? $('#simInputStr').value : '0101',
+      theme: document.documentElement.getAttribute('data-theme') || 'dark',
+      view: { ox: canvasView.ox, oy: canvasView.oy, z: canvasView.z }
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (err) {
+    // Storage might be restricted or full
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  saveToStorage();
+});
+
+function afterChange(now) {
+  redrawCanvas();
+  renderInspector();
+  updateCountsAndSummary();
+  updateUndoRedo();
+  scheduleSave();
+  if (now) recomputeAll();
+  else {
+    clearTimeout(recTimer);
+    recTimer = setTimeout(recomputeAll, 120);
+  }
+}
+
+function recomputeAll() {
+  try {
+    minResult = minimize(dfa);
+    renderMinimizer();
+    renderTransitionTable();
+    renderEpsilonClosure();
+    renderSubsetConstruction();
+    renderSimAlphabetChips();
+    runSimulation($('#simInputStr') ? $('#simInputStr').value.trim() : '0101', true);
+  } catch (err) {
+    console.warn('Recomputation error:', err);
+  }
+}
+
+function syncAlphabetFromTransitions() {
+  if (autoAlpha) {
+    const set = new Set();
+    dfa.trans.forEach(t => t.syms.forEach(s => {
+      if (s !== 'ε' && s !== 'λ') set.add(s);
+    }));
+    if (set.size > 0) definedAlpha = [...set].sort();
+    $('#alphaInput').value = definedAlpha.join(', ');
+  }
+}
+
+/* ---------- State & Edge Operations ---------- */
+const getState = id => dfa.states.find(s => s.id === id);
+
+function nextStateName() {
+  let k = 0;
+  while (getState('q' + k)) k++;
+  return 'q' + k;
+}
+
+function addState(p) {
+  mutate(() => {
+    const id = nextStateName();
+    const isFirst = dfa.states.length === 0;
+    dfa.states.push({
+      id,
+      x: Math.round(p.x),
+      y: Math.round(p.y),
+      initial: isFirst,
+      final: false
+    });
+    sel = { type: 'state', id };
+  });
+  showToast(`Created state "${sel.id}"` + (getState(sel.id).initial ? ' (Initial)' : ''), 'ok');
+}
+
+function deleteState(id) {
+  mutate(() => {
+    dfa.states = dfa.states.filter(s => s.id !== id);
+    dfa.trans = dfa.trans.filter(t => t.from !== id && t.to !== id);
+    if (sel && sel.type === 'state' && sel.id === id) sel = null;
+    syncAlphabetFromTransitions();
+  });
+  showToast(`Deleted state "${id}"`, 'ok');
+}
+
+function deleteEdge(idx) {
+  mutate(() => {
+    dfa.trans.splice(idx, 1);
+    sel = null;
+    syncAlphabetFromTransitions();
+  });
+  showToast('Deleted transition', 'ok');
+}
+
+function parseSyms(str) {
+  const raw = str.split(',').map(s => s.trim()).filter(Boolean);
+  const syms = new Set();
+  raw.forEach(token => {
+    const lower = token.toLowerCase();
+    if (lower === 'ε' || lower === 'λ' || lower === 'eps' || lower === 'null' || lower === 'e') {
+      syms.add('ε');
+    } else {
+      for (const c of Array.from(token)) syms.add(c);
+    }
+  });
+  return { syms: sortSyms([...syms]) };
+}
+
+function applyEdge(from, to, text, mode) {
+  const { syms } = parseSyms(text);
+  const ex = dfa.trans.find(t => t.from === from && t.to === to);
+  const fin = mode === 'add' ? sortSyms([...(ex ? ex.syms : []), ...syms]) : syms;
+
+  if (!fin.length && mode === 'add') {
+    showToast('Enter at least one symbol (e.g. 0, 1 or ε for null transition).', 'err');
+    return false;
+  }
+
+  // NFA and Null-NFA (ε-NFA) ALLOW multiple moves on the same symbol to different states!
+  mutate(() => {
+    if (ex) {
+      if (fin.length) ex.syms = fin;
+      else { dfa.trans.splice(dfa.trans.indexOf(ex), 1); sel = null; }
+    } else if (fin.length) {
+      dfa.trans.push({ from, to, syms: fin });
+    }
+    if (fin.length) sel = { type: 'edge', from, to };
+    syncAlphabetFromTransitions();
+  });
+  return true;
+}
+
+/* ---------- Floating Label Editor with + ε Button ---------- */
+let lblCtx = null;
+function openLabel(from, to) {
+  const a = getState(from), b = getState(to);
+  if (!a || !b) return;
+  const m = canvasView.svg.getScreenCTM();
+  if (!m) return;
+
+  let x, y;
+  if (from === to) {
+    const th = computeOptimalLoopAngle(a, new Map(dfa.states.map(s => [s.id, s])), dfa.trans);
+    x = a.x + (R + 48) * Math.cos(th);
+    y = a.y + (R + 48) * Math.sin(th);
+  } else {
+    x = (a.x + b.x) / 2; y = (a.y + b.y) / 2 - 18;
+  }
+
+  const pt = canvasView.svg.createSVGPoint();
+  pt.x = x; pt.y = y;
+  const c = pt.matrixTransform(m);
+  const wr = $('#canvasWrap').getBoundingClientRect();
+  const f = $('#lbl');
+  f.hidden = false;
+  const fw = f.offsetWidth || 210;
+  f.style.left = Math.max(8, Math.min(wr.width - fw - 8, c.x - wr.left - fw / 2)) + 'px';
+  f.style.top = Math.max(8, Math.min(wr.height - 56, c.y - wr.top - 20)) + 'px';
+
+  lblCtx = { from, to };
+  const curEdge = dfa.trans.find(t => t.from === from && t.to === to);
+  $('#lblIn').value = curEdge ? curEdge.syms.join(', ') : '';
+  $('#lblIn').focus();
+  showToast(`Enter symbols for ${from} → ${to} (e.g. 0, 1 or ε for null transition).`);
+}
+
+function closeLabel() {
+  $('#lbl').hidden = true;
+  lblCtx = null;
+}
+
+$('#lblAddEps').onclick = () => {
+  const input = $('#lblIn');
+  const cur = input.value.trim();
+  if (!cur) input.value = 'ε';
+  else if (!cur.includes('ε')) input.value = cur + ', ε';
+  input.focus();
+};
+
+$('#lbl').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!lblCtx) return;
+  const { from, to } = lblCtx;
+  if (applyEdge(from, to, $('#lblIn').value, 'add')) {
+    closeLabel();
+    showToast(`Added transition: ${from} → ${to}`, 'ok');
+  } else {
+    $('#lblIn').focus();
+  }
+});
+
+$('#lblIn').addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLabel();
+    showToast(getToolHint());
+  }
+});
+
+/* ---------- Inspector Rendering ---------- */
+function renderInspector() {
+  const box = $('#inspector');
+  if (sel && sel.type === 'state' && getState(sel.id)) {
+    const s = getState(sel.id);
+    box.innerHTML = `
+      <strong>State:</strong>
+      <label>Name <input type="text" id="inStateName" value="${esc(s.id)}" maxlength="8" autocomplete="off" spellcheck="false"></label>
+      <button class="pill ${s.initial ? 'active-init' : ''}" id="btnToggleInit" aria-pressed="${s.initial}">
+        ${s.initial ? 'Initial State (Active)' : 'Set as Initial'}
+      </button>
+      <button class="pill ${s.final ? 'active-fin' : ''}" id="btnToggleFin" aria-pressed="${s.final}">
+        ${s.final ? 'Final / Accepting (Active)' : 'Mark Final / Accepting'}
+      </button>
+      <button class="pill danger" id="btnDelSelectedState">Delete State</button>
+    `;
+
+    // Strictly ensure ONLY ONE state can be selected as initial
+    $('#btnToggleInit').onclick = () => {
+      mutate(() => {
+        const was = s.initial;
+        dfa.states.forEach(x => { x.initial = false; });
+        s.initial = !was;
+      });
+      showToast(`State "${s.id}" ${s.initial ? 'set as Initial state' : 'unmarked Initial'}.`, 'ok');
+    };
+
+    $('#btnToggleFin').onclick = () => {
+      mutate(() => { s.final = !s.final; });
+      showToast(`State "${s.id}" ${s.final ? 'marked Final / Accepting' : 'unmarked Final'}.`, 'ok');
+    };
+
+    $('#btnDelSelectedState').onclick = () => deleteState(s.id);
+
+    $('#inStateName').onchange = e => {
+      const v = e.target.value.trim();
+      const old = s.id;
+      if (!v) { showToast('A state needs a name.', 'err'); e.target.value = old; return; }
+      if (v !== old && getState(v)) { showToast(`State name "${v}" is already taken.`, 'err'); e.target.value = old; return; }
+      if (v === old) return;
+      mutate(() => {
+        s.id = v;
+        dfa.trans.forEach(t => {
+          if (t.from === old) t.from = v;
+          if (t.to === old) t.to = v;
+        });
+        sel = { type: 'state', id: v };
+      });
+      showToast(`Renamed state "${old}" to "${v}".`, 'ok');
+    };
+  } else if (sel && sel.type === 'edge') {
+    const t = dfa.trans.find(u => u.from === sel.from && u.to === sel.to);
+    if (t) {
+      const isLoop = (t.from === t.to);
+      const loopSelector = isLoop ? `
+        <label>Loop Side
+          <select id="selLoopAngle" class="pill" style="padding:2px 8px;font-size:12px;background:var(--card);color:var(--ink);">
+            <option value="auto" ${t.loopAngle == null ? 'selected' : ''}>Auto (Avoid Arrows)</option>
+            <option value="top" ${t.loopAngle === -Math.PI / 2 ? 'selected' : ''}>Top (↑)</option>
+            <option value="right" ${t.loopAngle === 0 ? 'selected' : ''}>Right (→)</option>
+            <option value="bottom" ${t.loopAngle === Math.PI / 2 ? 'selected' : ''}>Bottom (↓)</option>
+            <option value="left" ${t.loopAngle === Math.PI ? 'selected' : ''}>Left (←)</option>
+          </select>
+        </label>
+      ` : '';
+
+      box.innerHTML = `
+        <strong>Transition:</strong>
+        <span>${esc(t.from)} → ${esc(t.to)}</span>
+        <label>Symbols <input type="text" class="syms" id="inEdgeSyms" value="${esc(t.syms.join(', '))}" autocomplete="off" spellcheck="false" placeholder="e.g. 0, 1, ε"></label>
+        ${loopSelector}
+        <button class="pill danger" id="btnDelSelectedEdge">Delete Transition</button>
+      `;
+
+      $('#btnDelSelectedEdge').onclick = () => {
+        const idx = dfa.trans.findIndex(u => u.from === sel.from && u.to === sel.to);
+        if (idx >= 0) deleteEdge(idx);
+      };
+
+      $('#inEdgeSyms').onchange = e => {
+        if (!applyEdge(sel.from, sel.to, e.target.value, 'set')) {
+          const edge = dfa.trans.find(u => u.from === sel.from && u.to === sel.to);
+          if (edge) e.target.value = edge.syms.join(', ');
+        }
+      };
+
+      if (isLoop && $('#selLoopAngle')) {
+        $('#selLoopAngle').onchange = e => {
+          const val = e.target.value;
+          mutate(() => {
+            if (val === 'top') t.loopAngle = -Math.PI / 2;
+            else if (val === 'right') t.loopAngle = 0;
+            else if (val === 'bottom') t.loopAngle = Math.PI / 2;
+            else if (val === 'left') t.loopAngle = Math.PI;
+            else t.loopAngle = null;
+          });
+          afterChange(true);
+        };
+      }
+    }
+  } else {
+    box.innerHTML = `<span>${esc(getToolHint())}</span>`;
+  }
+}
+
+/* ---------- Pointer Event Handling ---------- */
+canvasView.svg.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  closeLabel();
+  const p = toModel(e);
+  const stEl = e.target.closest('[data-st]');
+  const edEl = e.target.closest('[data-ed]');
+  const stId = stEl ? stEl.dataset.st : null;
+
+  if (tool === 'select') {
+    if (stId) {
+      const s = getState(stId);
+      sel = { type: 'state', id: stId };
+      drag = {
+        kind: 'state',
+        id: stId,
+        dx: p.x - s.x,
+        dy: p.y - s.y,
+        startX: s.x,
+        startY: s.y,
+        moved: false
+      };
+    } else if (edEl) {
+      const t = dfa.trans[+edEl.dataset.ed];
+      if (t) sel = { type: 'edge', from: t.from, to: t.to };
+    } else {
+      sel = null;
+      drag = { kind: 'pan', sx: e.clientX, sy: e.clientY, ox: canvasView.ox, oy: canvasView.oy };
+    }
+    try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+    redrawCanvas();
+    renderInspector();
+  } else if (tool === 'state') {
+    if (!stId && !edEl) addState(p);
+  } else if (tool === 'trans') {
+    if (stId) {
+      const s = getState(stId);
+      drag = { kind: 'link', from: stId };
+      link = { x1: s.x, y1: s.y, x2: p.x, y2: p.y };
+      try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+      redrawCanvas();
+    }
+  } else if (tool === 'del') {
+    if (stId) deleteState(stId);
+    else if (edEl) deleteEdge(+edEl.dataset.ed);
+  }
+});
+
+canvasView.svg.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const p = toModel(e);
+
+  if (drag.kind === 'state') {
+    const s = getState(drag.id);
+    if (!s) return;
+    if (!drag.moved && (Math.abs(p.x - drag.dx - drag.startX) > 2 || Math.abs(p.y - drag.dy - drag.startY) > 2)) {
+      drag.moved = true;
+      hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+      hist.redo.length = 0;
+      updateUndoRedo();
+    }
+    s.x = Math.round(p.x - drag.dx);
+    s.y = Math.round(p.y - drag.dy);
+    redrawCanvas();
+  } else if (drag.kind === 'pan') {
+    canvasView.ox = drag.ox - (e.clientX - drag.sx) / canvasView.z;
+    canvasView.oy = drag.oy - (e.clientY - drag.sy) / canvasView.z;
+    applyView();
+  } else if (drag.kind === 'link') {
+    link.x2 = p.x;
+    link.y2 = p.y;
+    redrawCanvas();
+  }
+});
+
+function endDrag(e) {
+  if (!drag) return;
+  const d = drag;
+  drag = null;
+
+  if (d.kind === 'state') {
+    if (d.moved) afterChange();
+  } else if (d.kind === 'link') {
+    const p = toModel(e);
+    link = null;
+    const tgt = dfa.states.find(s => Math.hypot(s.x - p.x, s.y - p.y) <= R + 10);
+    redrawCanvas();
+    if (tgt) openLabel(d.from, tgt.id);
+    else showToast('Drop arrow onto a target state to complete transition.', 'err');
+  }
+}
+
+canvasView.svg.addEventListener('pointerup', endDrag);
+canvasView.svg.addEventListener('pointercancel', () => {
+  drag = null; link = null; redrawCanvas();
+});
+
+// Double click shortcut: Add state on canvas
+canvasView.svg.addEventListener('dblclick', e => {
+  if (tool === 'select') {
+    const stEl = e.target.closest('[data-st]');
+    if (stEl) {
+      const s = getState(stEl.dataset.st);
+      if (s) {
+        mutate(() => { s.final = !s.final; });
+        showToast(`Toggled final state "${s.id}".`, 'ok');
+      }
+    } else {
+      addState(toModel(e));
+    }
+  }
+});
+
+// Wheel zoom
+canvasView.svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const p = toModel(e);
+  const factor = e.deltaY < 0 ? 1.12 : 0.89;
+  setZoom(canvasView.z * factor, p.x, p.y);
+}, { passive: false });
+
+/* ---------- Keyboard Shortcuts ---------- */
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || document.querySelector('.overlay')) return;
+
+  if (e.key === 'v' || e.key === 'V') setTool('select');
+  else if (e.key === 's' || e.key === 'S') setTool('state');
+  else if (e.key === 't' || e.key === 'T') setTool('trans');
+  else if (e.key === 'd' || e.key === 'D') setTool('del');
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && sel) {
+    e.preventDefault();
+    if (sel.type === 'state') deleteState(sel.id);
+    else if (sel.type === 'edge') {
+      const idx = dfa.trans.findIndex(t => t.from === sel.from && t.to === sel.to);
+      if (idx >= 0) deleteEdge(idx);
+    }
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    if (e.shiftKey) redo(); else undo();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+    e.preventDefault();
+    redo();
+  }
+});
+
+/* ---------- Toolbar Tool Selector ---------- */
+function setTool(t) {
+  tool = t;
+  closeLabel();
+  $$('.tool[data-tool]').forEach(b => {
+    b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false');
+    b.classList.toggle('active', b.dataset.tool === t);
+  });
+  canvasView.svg.dataset.tool = t;
+  showToast(getToolHint());
+  renderInspector();
+  redrawCanvas();
+}
+
+$$('.tool[data-tool]').forEach(b => {
+  b.addEventListener('click', () => setTool(b.dataset.tool));
+});
+
+$('#btnUndo').onclick = undo;
+$('#btnRedo').onclick = redo;
+$('#btnFit').onclick = fitView;
+if ($('#btnCenter')) $('#btnCenter').onclick = centerView;
+$('#zoomRange').oninput = e => setZoom(e.target.value / 100);
+
+/* ---------- Alphabet Configuration ---------- */
+$('#btnSetAlpha').onclick = () => {
+  const val = $('#alphaInput').value.trim();
+  const raw = val.split(',').map(s => s.trim()).filter(Boolean);
+  if (!raw.length) {
+    showToast('Alphabet cannot be empty.', 'err');
+    return;
+  }
+  definedAlpha = sortSyms(raw.filter(s => s !== 'ε' && s !== 'λ'));
+  autoAlpha = false;
+  $('#chkAutoAlpha').checked = false;
+  afterChange(true);
+  showToast(`Alphabet defined as Σ = {${definedAlpha.join(', ')}}`, 'ok');
+};
+
+$('#chkAutoAlpha').onchange = e => {
+  autoAlpha = e.target.checked;
+  if (autoAlpha) {
+    syncAlphabetFromTransitions();
+    afterChange(true);
+    showToast('Alphabet auto-detection enabled.', 'ok');
+  } else {
+    showToast('Alphabet set to manual mode.', 'ok');
+  }
+};
+
+/* =========================================================================
+   Interactive Simulation Runner & Step-by-Step UI
+   ========================================================================= */
+
+function runSimulation(str, keepStep) {
+  const alpha = getAlphabet();
+  const sim = simulateAutomaton(dfa, str, alpha);
+  simState.result = sim;
+
+  if (!keepStep) {
+    simState.curStep = 0;
+  } else {
+    simState.curStep = Math.min(simState.curStep, (sim.trace ? sim.trace.length - 1 : 0));
+  }
+
+  updateSimulationUI();
+  redrawCanvas();
+  return sim;
+}
+
+function updateSimulationUI() {
+  const sim = simState.result;
+  const str = $('#simInputStr').value.trim();
+  const banner = $('#resultBanner');
+  const icon = $('#resIcon');
+  const status = $('#resStatus');
+  const desc = $('#resDesc');
+  const tapeStrip = $('#tapeStrip');
+  const traceTbody = $('#traceTableBody');
+
+  if (!sim || !sim.trace || !sim.trace.length) {
+    banner.className = 'result-banner ready';
+    icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>`;
+    status.textContent = 'READY';
+    desc.textContent = 'Enter an input string and click Run or Step.';
+    tapeStrip.innerHTML = '<div class="tape-cell empty-msg">Tape empty. Enter a string above.</div>';
+    traceTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink2);padding:20px;">No trace available.</td></tr>';
+    $('#simStepCount').textContent = 'Step 0 / 0';
+    $('#tapePosLabel').textContent = 'Head: 0';
+    return;
+  }
+
+  const curTrace = sim.trace[simState.curStep];
+  const isLast = (simState.curStep === sim.trace.length - 1);
+
+  $('#simStepCount').textContent = `Step ${simState.curStep} / ${sim.trace.length - 1}`;
+  $('#tapePosLabel').textContent = `Head: ${curTrace.pos} (${curTrace.pos < str.length ? `symbol "${str[curTrace.pos]}"` : 'End of Tape'})`;
+
+  // Render Tape
+  const chars = Array.from(str);
+  if (!chars.length) {
+    tapeStrip.innerHTML = '<div class="tape-cell empty-msg">Empty string (ε)</div>';
+  } else {
+    tapeStrip.innerHTML = chars.map((ch, idx) => {
+      const isHead = (idx === curTrace.pos);
+      const isConsumed = (idx < curTrace.pos);
+      return `<div class="tape-cell ${isHead ? 'head' : ''} ${isConsumed ? 'consumed' : ''}" title="Index ${idx}: '${ch}'">${esc(ch)}</div>`;
+    }).join('');
+  }
+
+  // Render Status Banner
+  if (isLast) {
+    if (sim.accepted) {
+      banner.className = 'result-banner accepted';
+      icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>`;
+      status.textContent = 'ACCEPTED';
+      desc.textContent = sim.reason;
+    } else {
+      banner.className = 'result-banner rejected';
+      icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>`;
+      status.textContent = 'REJECTED';
+      desc.textContent = sim.reason;
+    }
+  } else {
+    banner.className = 'result-banner running';
+    icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>`;
+    status.textContent = 'STEP ' + simState.curStep + ' OF ' + (sim.trace.length - 1);
+    desc.textContent = curTrace.action;
+  }
+
+  // Render Trace Table
+  let rowsHtml = '';
+  sim.trace.forEach((stepItem, idx) => {
+    const isCur = (idx === simState.curStep);
+    const activeArr = stepItem.activeStates || [];
+    const nextArr = stepItem.nextStates || [];
+
+    const activeBadges = activeArr.length ? activeArr.map(id => {
+      const sInit = (id === (dfa.states.find(s => s.initial) || {}).id);
+      const sFin = dfa.states.some(s => s.id === id && s.final);
+      return `<span class="st-badge ${sInit ? 'init' : ''} ${sFin ? 'fin' : ''}">${esc(id)}</span>`;
+    }).join(' ') : '<span style="color:var(--bad);">∅ (Empty)</span>';
+
+    const nextBadges = nextArr.length ? nextArr.map(id => {
+      const sInit = (id === (dfa.states.find(s => s.initial) || {}).id);
+      const sFin = dfa.states.some(s => s.id === id && s.final);
+      return `<span class="st-badge ${sInit ? 'init' : ''} ${sFin ? 'fin' : ''}">${esc(id)}</span>`;
+    }).join(' ') : '<span style="color:var(--bad);">∅ (Halt)</span>';
+
+    rowsHtml += `
+      <tr class="${isCur ? 'active-step' : ''}" data-step-idx="${idx}">
+        <td><b>${stepItem.step}</b></td>
+        <td>${activeBadges}</td>
+        <td><span style="font-weight:700;color:var(--accent);">${esc(stepItem.symbol)}</span></td>
+        <td>${nextBadges}</td>
+        <td><span style="opacity:0.8;">${esc(stepItem.remaining)}</span></td>
+        <td><span style="font-weight:600;color:${stepItem.status === 'ACCEPTED' ? 'var(--good)' : (stepItem.status === 'STUCK' || stepItem.status === 'REJECTED' ? 'var(--bad)' : 'var(--ink)')};">${esc(stepItem.status)}</span></td>
+      </tr>
+    `;
+  });
+  traceTbody.innerHTML = rowsHtml;
+}
+
+function simStepNext() {
+  if (!simState.result || !simState.result.trace) {
+    runSimulation($('#simInputStr').value.trim());
+  }
+  if (simState.curStep < simState.result.trace.length - 1) {
+    simState.curStep++;
+    updateSimulationUI();
+    redrawCanvas();
+  } else {
+    pauseAutoPlay();
+    showToast(simState.result.accepted ? 'Simulation finished: String ACCEPTED.' : 'Simulation finished: String REJECTED.', simState.result.accepted ? 'ok' : 'err');
+  }
+}
+
+function simStepPrev() {
+  if (simState.curStep > 0) {
+    simState.curStep--;
+    updateSimulationUI();
+    redrawCanvas();
+  }
+}
+
+function simReset() {
+  pauseAutoPlay();
+  simState.curStep = 0;
+  updateSimulationUI();
+  redrawCanvas();
+  showToast('Simulation reset to initial state.');
+}
+
+function toggleAutoPlay() {
+  if (simState.isPlaying) {
+    pauseAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function startAutoPlay() {
+  simState.isPlaying = true;
+  $('#playTextSpan').textContent = 'Pause';
+  $('#playIconSpan').innerHTML = `<svg class="btn-icon" viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/></svg>`;
+  $('#btnSimPlay').classList.add('primary');
+
+  if (simState.curStep >= (simState.result ? simState.result.trace.length - 1 : 0)) {
+    simState.curStep = 0;
+  }
+
+  simState.timer = setInterval(() => {
+    if (simState.curStep < simState.result.trace.length - 1) {
+      simStepNext();
+    } else {
+      pauseAutoPlay();
+    }
+  }, simState.speed);
+}
+
+function pauseAutoPlay() {
+  simState.isPlaying = false;
+  clearInterval(simState.timer);
+  $('#playTextSpan').textContent = 'Auto Play';
+  $('#playIconSpan').innerHTML = `<svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg>`;
+  $('#btnSimPlay').classList.remove('primary');
+}
+
+// Simulator Events
+$('#btnSimRun').onclick = () => {
+  pauseAutoPlay();
+  const sim = runSimulation($('#simInputStr').value.trim());
+  if (sim && sim.trace) {
+    simState.curStep = sim.trace.length - 1;
+    updateSimulationUI();
+    redrawCanvas();
+    showToast(sim.accepted ? 'Input ACCEPTED by automaton' : 'Input REJECTED by automaton', sim.accepted ? 'ok' : 'err');
+  }
+};
+
+$('#btnQuickRun').onclick = () => {
+  $('#simInputStr').value = $('#tbQuickInput').value;
+  switchDockView('sim');
+  $('#btnSimRun').click();
+};
+
+$('#btnSimReset').onclick = simReset;
+$('#btnSimNext').onclick = () => { pauseAutoPlay(); simStepNext(); };
+$('#btnSimPrev').onclick = () => { pauseAutoPlay(); simStepPrev(); };
+$('#btnSimPlay').onclick = toggleAutoPlay;
+
+$('#simSpeedSelect').onchange = e => {
+  simState.speed = +e.target.value;
+  if (simState.isPlaying) {
+    pauseAutoPlay();
+    startAutoPlay();
+  }
+};
+
+// Quick symbol insertion is managed dynamically by renderSimAlphabetChips()
+if ($('#btnSimEps')) {
+  $('#btnSimEps').onclick = () => {
+    $('#simInputStr').value = '';
+    if ($('#tbQuickInput')) $('#tbQuickInput').value = '';
+    runSimulation('');
+  };
+}
+if ($('#btnSimClear')) {
+  $('#btnSimClear').onclick = () => {
+    $('#simInputStr').value = '';
+    if ($('#tbQuickInput')) $('#tbQuickInput').value = '';
+    runSimulation('');
+  };
+}
+
+$('#simInputStr').oninput = e => {
+  $('#tbQuickInput').value = e.target.value;
+  runSimulation(e.target.value.trim());
+  scheduleSave();
+};
+
+$('#traceTableBody').addEventListener('click', e => {
+  const tr = e.target.closest('[data-step-idx]');
+  if (tr) {
+    pauseAutoPlay();
+    simState.curStep = +tr.dataset.stepIdx;
+    updateSimulationUI();
+    redrawCanvas();
+  }
+});
+
+/* =========================================================================
+   Minimizer & Results View (with Apply to Canvas Option)
+   ========================================================================= */
+
+let minTab = 'table';
+let minStep = 0;
+
+function applyMinimizedDfaToCanvas() {
+  if (!minResult || !minResult.min || !minResult.min.states || !minResult.min.states.length) {
+    showToast('No minimized DFA available to apply.', 'err');
+    return;
+  }
+  const min = minResult.min;
+  const count = min.states.length;
+  const cols = Math.ceil(Math.sqrt(count * 1.5));
+
+  const newStates = min.states.map((s, idx) => ({
+    id: s.id,
+    label: s.id,
+    sub: '{' + s.members.join(', ') + '}',
+    x: 160 + (idx % cols) * 190,
+    y: 160 + Math.floor(idx / cols) * 140,
+    initial: !!s.initial,
+    final: !!s.final
+  }));
+
+  const newTrans = min.trans.map(t => ({
+    from: t.from,
+    to: t.to,
+    syms: [...t.syms]
+  }));
+
+  mutate(() => {
+    dfa = { states: newStates, trans: newTrans };
+    sel = null;
+  });
+
+  fitView();
+  showToast(`Applied Minimized DFA (${count} states) to canvas!`, 'ok');
+}
+
+function renderMinimizer() {
+  const box = $('#minContainer');
+  const r = minResult;
+  if (!r || r.errors.length) {
+    box.innerHTML = `
+      <div style="padding:24px;background:var(--canvas);border:1px dashed var(--line);border-radius:4px;color:var(--ink2);">
+        <strong style="color:var(--ink);display:block;margin-bottom:6px;font-size:14px;">Automaton Not Ready for Minimization</strong>
+        <p>${r && r.errors.length ? esc(r.errors.join(' ')) : 'Please add states and transitions to the canvas.'}</p>
+      </div>
+    `;
+    return;
+  }
+
+  const total = dfa.states.length;
+  const reach = r.order.length;
+  const minCount = r.min.states.length;
+  const isConvertedFromNfa = (r.originalType !== 'DFA (Deterministic)');
+
+  const subtabs = [
+    ['reach', '1. Reachable States'],
+    ['table', '2. Table-Filling'],
+    ['part', '3. Partition Refinement'],
+    ['min', '4. Minimized DFA']
+  ];
+
+  let html = `
+    <div class="summary-bar">
+      <div class="stat-box"><b>${total}</b><span>Drawn States (${r.originalType})</span></div>
+      <span class="arrowsep">→</span>
+      <div class="stat-box"><b>${reach}</b><span>Reachable Deterministic</span></div>
+      <span class="arrowsep">→</span>
+      <div class="stat-box"><b style="color:var(--accent);">${minCount}</b><span>Minimal DFA</span></div>
+      
+      <div style="margin-left:auto;display:flex;gap:12px;align-items:center;">
+        <button class="btn primary sm" id="btnApplyMinDfaTop" title="Load the minimized machine directly onto the canvas">
+          Apply Minimized DFA to Canvas
+        </button>
+        <span style="color:${r.verified ? 'var(--good)' : 'var(--bad)'};font-weight:600;font-size:12px;">
+          ${r.verified ? 'Language Equivalence Verified' : 'Language Discrepancy Detected'}
+        </span>
+      </div>
+    </div>
+
+    ${isConvertedFromNfa ? `
+      <div style="padding:6px 12px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:3px;font-size:12px;color:var(--ink);">
+        <b>Notice:</b> Canvas contains a <b>${r.originalType}</b>. It was automatically converted to an equivalent deterministic automaton via <b>Subset Construction (Powerset Construction)</b> before minimization.
+      </div>
+    ` : ''}
+
+    <div>
+      <div class="min-subtabs" role="tablist">
+        ${subtabs.map(t => `
+          <button class="min-subtab-btn ${minTab === t[0] ? 'active' : ''}" data-min-tab="${t[0]}">${t[1]}</button>
+        `).join('')}
+      </div>
+      <div class="min-subpanel">
+        ${renderMinSubpanel()}
+      </div>
+    </div>
+  `;
+  box.innerHTML = html;
+
+  const btnTop = $('#btnApplyMinDfaTop');
+  if (btnTop) btnTop.onclick = applyMinimizedDfaToCanvas;
+}
+
+function renderMinSubpanel() {
+  const r = minResult;
+  if (minTab === 'reach') {
+    return `
+      <div>
+        <h3 style="margin-bottom:8px;">Reachable from Initial State (${esc(r.order[0])})</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.bfs.map(s => `<span class="chip cls">${esc(s)}</span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <h3 style="margin-bottom:8px;">Unreachable (Eliminated)</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.unreachable.length ? r.unreachable.map(s => `<span class="chip dim">${esc(s)}</span>`).join('') : '<span style="color:var(--ink2);">None. All states are reachable.</span>'}
+        </div>
+      </div>
+    `;
+  } else if (minTab === 'table') {
+    const T = r.table;
+    const S = T.states;
+    const n = S.length;
+    if (n < 2) return '<p style="color:var(--ink2);">Only one state: no pairs to distinguish.</p>';
+
+    const mk = new Map(T.marks.map(m => [m.i + ',' + m.j, m]));
+    let st = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;"><span style="font-weight:700;">Round:</span>`;
+    for (let i = 0; i <= T.maxRound; i++) {
+      st += `<button class="btn sm ${minStep === i ? 'primary' : ''}" data-min-step="${i}">${i}</button>`;
+    }
+    st += `</div>`;
+
+    let tb = `<div style="overflow:auto;"><table class="tf"><thead><tr><th></th>${S.slice(0, n - 1).map(s => `<th>${esc(s)}</th>`).join('')}</tr></thead><tbody>`;
+    for (let i = 1; i < n; i++) {
+      tb += `<tr><th>${esc(S[i])}</th>`;
+      for (let j = 0; j < n - 1; j++) {
+        if (j >= i) { tb += '<td class="void"></td>'; continue; }
+        const m = mk.get(i + ',' + j);
+        const isMarked = m && m.round <= minStep;
+        if (isMarked) {
+          tb += `<td><button class="cell x">X<sup>${m.round}</sup></button></td>`;
+        } else if (minStep === T.maxRound) {
+          tb += `<td><button class="cell eq">=</button></td>`;
+        } else {
+          tb += `<td><button class="cell">·</button></td>`;
+        }
+      }
+      tb += `</tr>`;
+    }
+    tb += `</tbody></table></div>`;
+    return st + tb;
+  } else if (minTab === 'part') {
+    const rounds = r.partition.rounds;
+    return `
+      <div>
+        <h3 style="margin-bottom:6px;">Partition Refinement Steps (Moore's Method)</h3>
+        <p style="color:var(--ink2);margin-bottom:10px;">Successively splits blocks of states that behave differently on alphabet transitions.</p>
+        <div style="display:grid;gap:10px;">
+          ${rounds.map((rnd, k) => `
+            <div style="background:var(--win);padding:10px;border-radius:4px;border:1px solid var(--line);">
+              <b>Round ${k}:</b>
+              <div class="blocks" style="margin-top:6px;">
+                ${rnd.blocks.map((b, bi) => `<span class="block"><i>B${bi+1}</i>{${b.join(', ')}}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (minTab === 'min') {
+    return `
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+          <div>
+            <h3 style="margin-bottom:4px;">Minimized DFA States &amp; Transitions</h3>
+            <p style="color:var(--ink2);">Equivalence classes merged into canonical minimal states.</p>
+          </div>
+          <button class="btn primary" id="btnApplyMinDfaBottom">
+            Apply Minimized DFA to Canvas
+          </button>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          ${r.min.states.map(s => `
+            <span class="chip cls" style="padding:4px 10px;">
+              <b>${s.id}</b> = {${s.members.join(', ')}} ${s.initial ? '→ (init)' : ''} ${s.final ? '* (final)' : ''}
+            </span>
+          `).join('')}
+        </div>
+        <div style="overflow:auto;">
+          <table class="dt">
+            <thead><tr><th>State</th><th>Merged Members</th>${r.alpha.map(a => `<th>on '${a}'</th>`).join('')}</tr></thead>
+            <tbody>
+              ${r.min.states.map(s => `
+                <tr>
+                  <th>${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${s.id}</th>
+                  <td>{${s.members.join(', ')}}</td>
+                  ${r.alpha.map(a => {
+                    const tr = r.min.trans.find(t => t.from === s.id && t.syms.includes(a));
+                    return `<td>${tr ? tr.to : '—'}</td>`;
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+  return '';
+}
+
+$('#minContainer').addEventListener('click', e => {
+  const tabBtn = e.target.closest('[data-min-tab]');
+  if (tabBtn) {
+    minTab = tabBtn.dataset.minTab;
+    renderMinimizer();
+    return;
+  }
+  const stepBtn = e.target.closest('[data-min-step]');
+  if (stepBtn) {
+    minStep = +stepBtn.dataset.minStep;
+    renderMinimizer();
+    return;
+  }
+  if (e.target.closest('#btnApplyMinDfaBottom')) {
+    applyMinimizedDfaToCanvas();
+  }
+});
+
+/* =========================================================================
+   Transition Table View
+   ========================================================================= */
+
+function renderTransitionTable() {
+  const box = $('#tableContainer');
+  const alpha = getAlphabet();
+  const model = runModelOf(dfa);
+  const errs = validate(dfa);
+  const autoType = getAutomatonType(dfa);
+
+  // Alphabet headers include ε if present
+  const hasEps = dfa.trans.some(t => t.syms.includes('ε') || t.syms.includes('λ'));
+  const cols = [...alpha];
+  if (hasEps) cols.push('ε');
+
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h3 style="margin-bottom:4px;">Automaton Transition Table δ(q, a) — ${autoType}</h3>
+        <p style="color:var(--ink2);font-size:12px;">Shows state transitions for alphabet symbols Σ = {${alpha.join(', ')}} ${hasEps ? 'and null transitions (ε)' : ''}.</p>
+      </div>
+      <div>
+        <span style="font-size:12px;color:${errs.length ? 'var(--bad)' : 'var(--good)'};font-weight:600;">
+          ${errs.length ? 'Validation Warning: ' + esc(errs[0]) : 'Valid ' + autoType}
+        </span>
+      </div>
+    </div>
+
+    <div style="overflow:auto;margin-top:10px;">
+      <table class="dt" style="width:100%;max-width:850px;">
+        <thead>
+          <tr>
+            <th style="width:130px;">State</th>
+            <th style="width:100px;">Type</th>
+            ${cols.map(a => `<th>Input '${esc(a)}'</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${dfa.states.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--ink2);">No states created yet.</td></tr>' : ''}
+          ${dfa.states.map(s => `
+            <tr>
+              <th scope="row" style="font-weight:700;">
+                ${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${esc(s.id)}
+              </th>
+              <td style="font-size:11px;color:var(--ink2);">
+                ${s.initial ? 'Initial' : ''}${s.initial && s.final ? ', ' : ''}${s.final ? 'Accepting' : ''}${!s.initial && !s.final ? 'Normal' : ''}
+              </td>
+              ${cols.map(a => {
+                const targets = (model.delta[s.id] && model.delta[s.id][a]) || [];
+                return `<td>${targets.length ? `<span style="font-weight:700;color:var(--accent);">{${targets.join(', ')}}</span>` : '<span style="color:var(--ink3);">∅</span>'}</td>`;
+              }).join('')}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  box.innerHTML = html;
+}
+
+/* ---------- Dynamic Alphabet Chips in Simulator ---------- */
+function renderSimAlphabetChips() {
+  const container = $('#simChips');
+  if (!container) return;
+  const alpha = getAlphabet();
+  let html = '';
+  alpha.forEach(sym => {
+    html += `<button class="chip-btn" data-sym="${esc(sym)}">${esc(sym)}</button>`;
+  });
+  html += `
+    <button class="chip-btn" id="btnSimEps" title="Empty string ε">ε (empty)</button>
+    <button class="chip-btn" id="btnSimClear">Clear</button>
+  `;
+  container.innerHTML = html;
+
+  container.querySelectorAll('[data-sym]').forEach(b => {
+    b.onclick = () => {
+      $('#simInputStr').value += b.dataset.sym;
+      if ($('#tbQuickInput')) $('#tbQuickInput').value = $('#simInputStr').value;
+      runSimulation($('#simInputStr').value.trim());
+      scheduleSave();
+    };
+  });
+
+  const bEps = $('#btnSimEps');
+  if (bEps) {
+    bEps.onclick = () => {
+      $('#simInputStr').value = '';
+      if ($('#tbQuickInput')) $('#tbQuickInput').value = '';
+      runSimulation('');
+      scheduleSave();
+    };
+  }
+
+  const bClr = $('#btnSimClear');
+  if (bClr) {
+    bClr.onclick = () => {
+      $('#simInputStr').value = '';
+      if ($('#tbQuickInput')) $('#tbQuickInput').value = '';
+      runSimulation('');
+      scheduleSave();
+    };
+  }
+}
+
+/* =========================================================================
+   ε-Closure Calculation & Analysis View
+   ========================================================================= */
+
+function renderEpsilonClosure() {
+  const box = $('#closureContainer');
+  if (!box) return;
+  const model = runModelOf(dfa);
+  const states = dfa.states;
+
+  if (!states.length) {
+    box.innerHTML = `
+      <div style="padding:24px;background:var(--canvas);border:1px dashed var(--line);border-radius:4px;color:var(--ink2);">
+        <strong style="color:var(--ink);display:block;margin-bottom:6px;">No States on Canvas</strong>
+        <p>Please create states and transitions to compute ε-closures.</p>
+      </div>`;
+    return;
+  }
+
+  const hasEps = dfa.trans.some(t => t.syms.includes('ε') || t.syms.includes('λ'));
+
+  let rows = '';
+  states.forEach(s => {
+    const directEps = (model.delta[s.id] && model.delta[s.id]['ε']) || [];
+    const closureSet = [...epsilonClosure([s.id], model.delta)].sort();
+    
+    const pathTrace = [];
+    closureSet.forEach(p => {
+      if (p === s.id) pathTrace.push(`${p} (self)`);
+      else pathTrace.push(`${s.id} ↝ ${p}`);
+    });
+
+    rows += `
+      <tr>
+        <th scope="row" style="font-weight:700;">
+          ${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${esc(s.id)}
+        </th>
+        <td>
+          <span class="st-badge ${s.initial ? 'init' : ''} ${s.final ? 'fin' : ''}">${esc(s.id)}</span>
+          ${s.initial ? '<span style="font-size:11px;color:var(--accent);margin-left:6px;">[Initial]</span>' : ''}
+          ${s.final ? '<span style="font-size:11px;color:var(--bad);margin-left:6px;">[Accepting]</span>' : ''}
+        </td>
+        <td>
+          ${directEps.length ? directEps.map(target => `<span class="chip" style="margin:2px;">${esc(s.id)} → ${esc(target)}</span>`).join(' ') : '<span style="color:var(--ink3);">None (∅)</span>'}
+        </td>
+        <td style="font-weight:700;color:var(--accent);font-family:var(--mono);">
+          { ${closureSet.join(', ')} }
+        </td>
+        <td style="font-size:12px;color:var(--ink2);font-family:var(--mono);">
+          ${pathTrace.join('; ')}
+        </td>
+      </tr>
+    `;
+  });
+
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <div>
+        <h3 style="margin-bottom:4px;">Formal ε-Closure Calculation: ε-closure(q)</h3>
+        <p style="color:var(--ink2);font-size:12px;">
+          For each state <i>q</i>, <b>ε-closure(q)</b> is the set of all states reachable from <i>q</i> using only null (ε) transitions, including <i>q</i> itself.
+          ${hasEps ? '<span style="color:var(--accent);font-weight:600;margin-left:6px;">(ε-transitions detected in automaton)</span>' : '<span style="color:var(--ink3);margin-left:6px;">(No ε-transitions present; each state closure is {q})</span>'}
+        </p>
+      </div>
+    </div>
+
+    <div style="overflow:auto;margin-bottom:16px;">
+      <table class="dt" style="width:100%;">
+        <thead>
+          <tr>
+            <th style="width:70px;">State</th>
+            <th style="width:130px;">Classification</th>
+            <th>Direct ε-Moves δ(q, ε)</th>
+            <th>Calculated ε-closure(q)</th>
+            <th>Reachability Derivation</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:var(--win);border:1px solid var(--line);border-radius:4px;padding:12px 16px;">
+      <strong style="display:block;margin-bottom:6px;font-size:13px;color:var(--ink);">Interactive Subset ε-Closure Evaluator</strong>
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+        <span style="font-size:12px;color:var(--ink2);">Select state subset:</span>
+        <div id="closureSubsetSelect" style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${states.map(s => `
+            <label style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--card);border:1px solid var(--line);border-radius:3px;font-size:12px;cursor:pointer;">
+              <input type="checkbox" class="chk-closure-state" value="${esc(s.id)}"> ${esc(s.id)}
+            </label>
+          `).join('')}
+        </div>
+        <button class="btn sm primary" id="btnEvalClosureSubset">Calculate ε-closure(S)</button>
+        <span id="closureSubsetResult" style="font-weight:700;color:var(--accent);font-family:var(--mono);font-size:13px;margin-left:8px;"></span>
+      </div>
+    </div>
+  `;
+
+  const btnEval = $('#btnEvalClosureSubset');
+  if (btnEval) {
+    btnEval.onclick = () => {
+      const selected = $$('.chk-closure-state:checked').map(cb => cb.value);
+      if (!selected.length) {
+        $('#closureSubsetResult').textContent = 'ε-closure(∅) = ∅';
+        return;
+      }
+      const res = [...epsilonClosure(selected, model.delta)].sort();
+      $('#closureSubsetResult').textContent = `ε-closure({${selected.join(', ')}}) = { ${res.join(', ')} }`;
+    };
+  }
+}
+
+/* =========================================================================
+   NFA to DFA Subset Construction View
+   ========================================================================= */
+
+function renderSubsetConstruction() {
+  const box = $('#subsetContainer');
+  if (!box) return;
+
+  const alpha = getAlphabet();
+  const letters = alpha.filter(a => a !== 'ε' && a !== 'λ');
+  const model = runModelOf(dfa);
+  const autoType = getAutomatonType(dfa);
+
+  if (!model.init) {
+    box.innerHTML = `
+      <div style="padding:24px;background:var(--canvas);border:1px dashed var(--line);border-radius:4px;color:var(--ink2);">
+        <strong style="color:var(--ink);display:block;margin-bottom:6px;">No Initial State Selected</strong>
+        <p>Please select an initial state to run subset construction.</p>
+      </div>`;
+    return;
+  }
+
+  const converted = convertNfaToDfa(dfa, alpha);
+  if (!converted || !converted.states.length) {
+    box.innerHTML = `
+      <div style="padding:24px;background:var(--canvas);border:1px dashed var(--line);border-radius:4px;color:var(--ink2);">
+        <strong style="color:var(--ink);display:block;margin-bottom:6px;">Conversion Failed</strong>
+        <p>Could not build DFA powerset model.</p>
+      </div>`;
+    return;
+  }
+
+  let tableRows = '';
+  converted.states.forEach(s => {
+    let transCols = '';
+    letters.forEach(a => {
+      const tr = converted.trans.find(t => t.from === s.id && t.syms.includes(a));
+      if (tr) {
+        const destState = converted.states.find(x => x.id === tr.to);
+        const destMembers = destState ? destState.members.join(', ') : '';
+        transCols += `<td><b>${esc(tr.to)}</b> <span style="font-size:11px;color:var(--ink2);">{${esc(destMembers)}}</span></td>`;
+      } else {
+        transCols += `<td style="color:var(--ink3);">∅ (Dead)</td>`;
+      }
+    });
+
+    tableRows += `
+      <tr>
+        <th scope="row" style="font-weight:700;">
+          ${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${esc(s.id)}
+        </th>
+        <td style="font-family:var(--mono);color:var(--accent);font-weight:600;">
+          { ${esc(s.members.join(', '))} }
+        </td>
+        <td>
+          ${s.initial ? '<span class="pill active-init" style="font-size:11px;padding:1px 6px;">Initial</span> ' : ''}
+          ${s.final ? '<span class="pill active-fin" style="font-size:11px;padding:1px 6px;">Accepting</span> ' : ''}
+          ${!s.initial && !s.final ? '<span style="font-size:11px;color:var(--ink2);">Normal</span>' : ''}
+        </td>
+        ${transCols}
+      </tr>
+    `;
+  });
+
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
+      <div>
+        <h3 style="margin-bottom:4px;">NFA / ε-NFA to DFA Conversion — Powerset Subset Construction</h3>
+        <p style="color:var(--ink2);font-size:12px;">
+          Current automaton type: <b>${esc(autoType)}</b> (${dfa.states.length} states) → Equivalent DFA: <b>${converted.states.length} states</b>.
+        </p>
+      </div>
+      <div>
+        <button class="btn primary" id="btnApplySubsetDfa">
+          <svg class="btn-icon" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z"/></svg>
+          Apply Converted DFA to Canvas
+        </button>
+      </div>
+    </div>
+
+    <div style="overflow:auto;">
+      <table class="dt" style="width:100%;">
+        <thead>
+          <tr>
+            <th style="width:80px;">DFA State</th>
+            <th>Original NFA Subset Members {q}</th>
+            <th style="width:130px;">Classification</th>
+            ${letters.map(a => `<th>on '${esc(a)}'</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  const bApply = $('#btnApplySubsetDfa');
+  if (bApply) {
+    bApply.onclick = () => {
+      applyConvertedDfaToCanvas();
+    };
+  }
+}
+
+function applyConvertedDfaToCanvas() {
+  const alpha = getAlphabet();
+  const converted = convertNfaToDfa(dfa, alpha);
+  if (!converted || !converted.states.length) {
+    showToast('Cannot convert: please check initial state and transitions.', 'err');
+    return;
+  }
+  const count = converted.states.length;
+  const cols = Math.ceil(Math.sqrt(count * 1.5));
+
+  const newStates = converted.states.map((s, idx) => ({
+    id: s.id,
+    label: s.id,
+    sub: '{' + s.members.join(', ') + '}',
+    x: 160 + (idx % cols) * 190,
+    y: 160 + Math.floor(idx / cols) * 140,
+    initial: !!s.initial,
+    final: !!s.final
+  }));
+
+  const newTrans = converted.trans.map(t => ({
+    from: t.from,
+    to: t.to,
+    syms: [...t.syms]
+  }));
+
+  mutate(() => {
+    dfa = { states: newStates, trans: newTrans };
+    sel = null;
+  });
+
+  fitView();
+  showToast(`Applied Equivalent DFA (${count} states) to canvas!`, 'ok');
+}
+
+/* =========================================================================
+   Thompson's Construction Engine (Regex → ε-NFA)
+   ========================================================================= */
+
+function parseRegexToPostfix(re) {
+  re = re.replace(/\s+/g, '');
+  if (!re) return '';
+
+  const isAlpha = c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c === 'ε' || c === 'λ' || c === 'e';
+  let formatted = '';
+  for (let i = 0; i < re.length; i++) {
+    const c1 = re[i];
+    formatted += c1;
+    if (i + 1 < re.length) {
+      const c2 = re[i + 1];
+      if ((isAlpha(c1) || c1 === '*' || c1 === '+' || c1 === '?' || c1 === ')') &&
+          (isAlpha(c2) || c2 === '(')) {
+        formatted += '·';
+      }
+    }
+  }
+
+  const prec = { '*': 3, '+': 3, '?': 3, '·': 2, '|': 1 };
+  const stack = [];
+  let postfix = '';
+
+  for (let i = 0; i < formatted.length; i++) {
+    const c = formatted[i];
+    if (isAlpha(c)) {
+      postfix += c;
+    } else if (c === '(') {
+      stack.push(c);
+    } else if (c === ')') {
+      while (stack.length && stack[stack.length - 1] !== '(') {
+        postfix += stack.pop();
+      }
+      stack.pop();
+    } else {
+      while (stack.length && stack[stack.length - 1] !== '(' && prec[stack[stack.length - 1]] >= prec[c]) {
+        postfix += stack.pop();
+      }
+      stack.push(c);
+    }
+  }
+  while (stack.length) postfix += stack.pop();
+  return postfix;
+}
+
+function thompsonConstruction(regex) {
+  const postfix = parseRegexToPostfix(regex);
+  if (!postfix) return null;
+
+  let stateId = 0;
+  const nextState = () => 'q' + (stateId++);
+
+  const stack = [];
+
+  for (let i = 0; i < postfix.length; i++) {
+    const c = postfix[i];
+
+    if (c === '·') {
+      const b = stack.pop();
+      const a = stack.pop();
+      if (!a || !b) throw new Error('Invalid syntax near concatenation');
+      
+      const trans = [...a.trans, ...b.trans, { from: a.accept, to: b.start, syms: ['ε'] }];
+      const states = [...new Set([...a.states, ...b.states])];
+      stack.push({ start: a.start, accept: b.accept, states, trans });
+    } else if (c === '|') {
+      const b = stack.pop();
+      const a = stack.pop();
+      if (!a || !b) throw new Error('Invalid syntax near union |');
+
+      const sIn = nextState();
+      const sOut = nextState();
+      const trans = [
+        ...a.trans, ...b.trans,
+        { from: sIn, to: a.start, syms: ['ε'] },
+        { from: sIn, to: b.start, syms: ['ε'] },
+        { from: a.accept, to: sOut, syms: ['ε'] },
+        { from: b.accept, to: sOut, syms: ['ε'] }
+      ];
+      const states = [sIn, ...a.states, ...b.states, sOut];
+      stack.push({ start: sIn, accept: sOut, states, trans });
+    } else if (c === '*') {
+      const a = stack.pop();
+      if (!a) throw new Error('Invalid syntax near star *');
+
+      const sIn = nextState();
+      const sOut = nextState();
+      const trans = [
+        ...a.trans,
+        { from: sIn, to: a.start, syms: ['ε'] },
+        { from: sIn, to: sOut, syms: ['ε'] },
+        { from: a.accept, to: a.start, syms: ['ε'] },
+        { from: a.accept, to: sOut, syms: ['ε'] }
+      ];
+      const states = [sIn, ...a.states, sOut];
+      stack.push({ start: sIn, accept: sOut, states, trans });
+    } else if (c === '+') {
+      const a = stack.pop();
+      if (!a) throw new Error('Invalid syntax near +');
+      const sIn = nextState();
+      const sOut = nextState();
+      const trans = [
+        ...a.trans,
+        { from: sIn, to: a.start, syms: ['ε'] },
+        { from: a.accept, to: a.start, syms: ['ε'] },
+        { from: a.accept, to: sOut, syms: ['ε'] }
+      ];
+      const states = [sIn, ...a.states, sOut];
+      stack.push({ start: sIn, accept: sOut, states, trans });
+    } else if (c === '?') {
+      const a = stack.pop();
+      if (!a) throw new Error('Invalid syntax near ?');
+      const sIn = nextState();
+      const sOut = nextState();
+      const trans = [
+        ...a.trans,
+        { from: sIn, to: a.start, syms: ['ε'] },
+        { from: sIn, to: sOut, syms: ['ε'] },
+        { from: a.accept, to: sOut, syms: ['ε'] }
+      ];
+      const states = [sIn, ...a.states, sOut];
+      stack.push({ start: sIn, accept: sOut, states, trans });
+    } else {
+      const sIn = nextState();
+      const sOut = nextState();
+      const sym = (c === 'ε' || c === 'λ' || c === 'e') ? 'ε' : c;
+      stack.push({
+        start: sIn,
+        accept: sOut,
+        states: [sIn, sOut],
+        trans: [{ from: sIn, to: sOut, syms: [sym] }]
+      });
+    }
+  }
+
+  if (stack.length !== 1) throw new Error('Malformed regular expression syntax');
+  const nfa = stack[0];
+
+  const transMap = new Map();
+  nfa.trans.forEach(t => {
+    const k = t.from + '->' + t.to;
+    if (transMap.has(k)) {
+      const ex = transMap.get(k);
+      t.syms.forEach(s => { if (!ex.syms.includes(s)) ex.syms.push(s); });
+    } else {
+      transMap.set(k, { from: t.from, to: t.to, syms: [...t.syms] });
+    }
+  });
+
+  const adj = {};
+  nfa.states.forEach(s => { adj[s] = []; });
+  transMap.forEach(t => { if (t.from !== t.to) adj[t.from].push(t.to); });
+
+  const layers = {};
+  const queue = [{ id: nfa.start, depth: 0 }];
+  layers[nfa.start] = 0;
+
+  while (queue.length > 0) {
+    const { id, depth } = queue.shift();
+    (adj[id] || []).forEach(nxt => {
+      if (layers[nxt] === undefined) {
+        layers[nxt] = depth + 1;
+        queue.push({ id: nxt, depth: depth + 1 });
+      }
+    });
+  }
+
+  const layerGroups = {};
+  nfa.states.forEach(s => {
+    const l = layers[s] !== undefined ? layers[s] : 0;
+    if (!layerGroups[l]) layerGroups[l] = [];
+    layerGroups[l].push(s);
+  });
+
+  const finalStates = [];
+  Object.keys(layerGroups).map(Number).sort((a,b)=>a-b).forEach(l => {
+    const group = layerGroups[l];
+    group.forEach((stId, idx) => {
+      const yOffset = (idx - (group.length - 1) / 2) * 110;
+      finalStates.push({
+        id: stId,
+        label: stId,
+        x: 140 + l * 150,
+        y: 220 + yOffset,
+        initial: (stId === nfa.start),
+        final: (stId === nfa.accept)
+      });
+    });
+  });
+
+  return {
+    states: finalStates,
+    trans: [...transMap.values()]
+  };
+}
+
+function extractAlphabetFromRegex(regex) {
+  const reserved = new Set(['(', ')', '*', '+', '?', '|', '·', 'ε', 'λ', 'e', ' ', '\t']);
+  const set = new Set();
+  for (const ch of regex) {
+    if (!reserved.has(ch)) set.add(ch);
+  }
+  return set.size ? [...set].sort() : ['a', 'b'];
+}
+
+function eliminateEpsilon(automaton, alpha) {
+  const model = runModelOf(automaton);
+  if (!model.init) return null;
+
+  const letters = (alpha || []).filter(a => a !== 'ε' && a !== 'λ');
+  const states = automaton.states.map(s => s.id);
+
+  const closures = {};
+  states.forEach(q => {
+    closures[q] = [...epsilonClosure([q], model.delta)];
+  });
+
+  const newInit = model.init;
+  const newFinals = new Set();
+  states.forEach(q => {
+    if (closures[q].some(p => model.finals.has(p))) {
+      newFinals.add(q);
+    }
+  });
+
+  const newDelta = {};
+  states.forEach(q => {
+    newDelta[q] = {};
+    letters.forEach(a => {
+      const direct = new Set();
+      closures[q].forEach(p => {
+        const moves = (model.delta[p] && model.delta[p][a]) || [];
+        moves.forEach(m => direct.add(m));
+      });
+      if (direct.size > 0) {
+        newDelta[q][a] = [...epsilonClosure(direct, model.delta)];
+      } else {
+        newDelta[q][a] = [];
+      }
+    });
+  });
+
+  const reachable = new Set();
+  const queue = [newInit];
+  reachable.add(newInit);
+
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    letters.forEach(a => {
+      (newDelta[cur][a] || []).forEach(nxt => {
+        if (!reachable.has(nxt)) {
+          reachable.add(nxt);
+          queue.push(nxt);
+        }
+      });
+    });
+  }
+
+  const retainedStates = automaton.states.filter(s => reachable.has(s.id));
+  const retainedFinals = new Set([...newFinals].filter(id => reachable.has(id)));
+
+  const edgeMap = new Map();
+  retainedStates.forEach(s => {
+    const from = s.id;
+    letters.forEach(a => {
+      (newDelta[from][a] || []).forEach(to => {
+        if (reachable.has(to)) {
+          const k = from + '->' + to;
+          if (edgeMap.has(k)) {
+            const ex = edgeMap.get(k);
+            if (!ex.syms.includes(a)) ex.syms.push(a);
+          } else {
+            edgeMap.set(k, { from, to, syms: [a] });
+          }
+        }
+      });
+    });
+  });
+
+  // BFS layering
+  const layers = {};
+  const bfsQ = [{ id: newInit, depth: 0 }];
+  layers[newInit] = 0;
+  while (bfsQ.length > 0) {
+    const { id, depth } = bfsQ.shift();
+    letters.forEach(a => {
+      (newDelta[id][a] || []).forEach(nxt => {
+        if (reachable.has(nxt) && layers[nxt] === undefined) {
+          layers[nxt] = depth + 1;
+          bfsQ.push({ id: nxt, depth: depth + 1 });
+        }
+      });
+    });
+  }
+
+  const layerGroups = {};
+  retainedStates.forEach(s => {
+    const l = layers[s.id] !== undefined ? layers[s.id] : 0;
+    if (!layerGroups[l]) layerGroups[l] = [];
+    layerGroups[l].push(s.id);
+  });
+
+  const finalStates = [];
+  Object.keys(layerGroups).map(Number).sort((a,b)=>a-b).forEach(l => {
+    const group = layerGroups[l];
+    group.forEach((stId, idx) => {
+      const yOffset = (idx - (group.length - 1) / 2) * 110;
+      finalStates.push({
+        id: stId,
+        label: stId,
+        x: 150 + l * 180,
+        y: 220 + yOffset,
+        initial: (stId === newInit),
+        final: retainedFinals.has(stId)
+      });
+    });
+  });
+
+  return {
+    states: finalStates,
+    trans: [...edgeMap.values()]
+  };
+}
+
+function openRegexModal(targetType = 'eps_nfa') {
+  const presets = [
+    { label: '(a|b)*c', desc: 'Strings of a, b ending in c' },
+    { label: '(0|1)*01', desc: 'Binary ending in 01' },
+    { label: 'a(b|c)*d', desc: 'Starts with a, middle b or c, ends with d' },
+    { label: 'a*b*c*', desc: 'Zero or more a, then b, then c' },
+    { label: '(a|ε)b', desc: 'Optional a followed by b' },
+    { label: '(00|11)*', desc: 'Even consecutive chunks' }
+  ];
+
+  openDialog({
+    title: "Build Automaton from Regular Expression",
+    wide: true,
+    body: `
+      <p style="color:var(--ink2);margin-bottom:12px;font-size:12.5px;">
+        Convert any regular expression into an equivalent <b>ε-NFA</b>, standard <b>NFA</b> (without null transitions), or <b>DFA</b> (deterministic finite automaton).
+      </p>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;margin-bottom:5px;font-weight:600;">Regular Expression:</label>
+        <input type="text" id="inRegexStr" class="sim-input" value="(a|b)*c" style="width:100%;font-size:14px;font-family:var(--mono);" placeholder="e.g. (a|b)*abb or (0|1)*01">
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="display:block;margin-bottom:6px;font-weight:600;">Target Automaton Model:</label>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(130px, 1fr));gap:8px;" id="regexTargetGroup">
+          <label class="pill-radio ${targetType === 'eps_nfa' ? 'active' : ''}">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:600;">
+              <input type="radio" name="regexTarget" value="eps_nfa" ${targetType === 'eps_nfa' ? 'checked' : ''}> ε-NFA
+            </div>
+            <span style="font-size:11px;color:var(--ink2);">Thompson Inductive with ε-moves</span>
+          </label>
+          <label class="pill-radio ${targetType === 'nfa' ? 'active' : ''}">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:600;">
+              <input type="radio" name="regexTarget" value="nfa" ${targetType === 'nfa' ? 'checked' : ''}> NFA
+            </div>
+            <span style="font-size:11px;color:var(--ink2);">Standard NFA (No ε-transitions)</span>
+          </label>
+          <label class="pill-radio ${targetType === 'dfa' ? 'active' : ''}">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:600;">
+              <input type="radio" name="regexTarget" value="dfa" ${targetType === 'dfa' ? 'checked' : ''}> DFA
+            </div>
+            <span style="font-size:11px;color:var(--ink2);">Subset Powerset Construction</span>
+          </label>
+          <label class="pill-radio ${targetType === 'min_dfa' ? 'active' : ''}">
+            <div style="display:flex;align-items:center;gap:6px;font-weight:600;">
+              <input type="radio" name="regexTarget" value="min_dfa" ${targetType === 'min_dfa' ? 'checked' : ''}> Minimal DFA
+            </div>
+            <span style="font-size:11px;color:var(--ink2);">Hopcroft/Moore State Minimized</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <span style="font-size:12px;color:var(--ink2);display:block;margin-bottom:4px;">Try textbook presets:</span>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${presets.map(p => `
+            <button class="pill regex-preset-btn" data-val="${p.label}" title="${p.desc}">${p.label}</button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div style="background:var(--win);border:1px solid var(--line);border-radius:4px;padding:10px 14px;font-size:12px;color:var(--ink2);line-height:1.5;">
+        <strong style="color:var(--ink);display:block;margin-bottom:3px;">Supported Syntax:</strong>
+        <span style="display:inline-block;margin-right:12px;">• <b>Letters & Digits:</b> a, b, 0, 1</span>
+        <span style="display:inline-block;margin-right:12px;">• <b>Null string:</b> ε, λ, e</span>
+        <span style="display:inline-block;margin-right:12px;">• <b>Kleene star:</b> *</span>
+        <span style="display:inline-block;margin-right:12px;">• <b>Union:</b> |</span>
+        <span style="display:inline-block;margin-right:12px;">• <b>Concatenation:</b> implicit (ab)</span>
+        <span style="display:inline-block;">• <b>Grouping:</b> ( )</span>
+      </div>
+    `,
+    buttons: [
+      {
+        label: 'Generate Automaton on Canvas',
+        primary: true,
+        action: () => {
+          const val = $('#inRegexStr').value.trim();
+          if (!val) {
+            showToast('Please enter a regular expression.', 'err');
+            return false;
+          }
+          const targetRad = document.querySelector('input[name="regexTarget"]:checked');
+          const target = targetRad ? targetRad.value : 'eps_nfa';
+          const alpha = extractAlphabetFromRegex(val);
+
+          try {
+            let built = null;
+            let typeLabel = '';
+
+            if (target === 'eps_nfa') {
+              built = thompsonConstruction(val);
+              typeLabel = 'Thompson ε-NFA';
+            } else if (target === 'nfa') {
+              const eps = thompsonConstruction(val);
+              built = eliminateEpsilon(eps, alpha);
+              typeLabel = 'Standard NFA (No ε-moves)';
+            } else if (target === 'dfa') {
+              const eps = thompsonConstruction(val);
+              built = convertNfaToDfa(eps, alpha);
+              typeLabel = 'DFA (Subset Construction)';
+            } else if (target === 'min_dfa') {
+              const eps = thompsonConstruction(val);
+              const dfaConverted = convertNfaToDfa(eps, alpha);
+              const min = minimize(dfaConverted);
+              if (min && min.min && min.min.states && min.min.states.length) {
+                const cols = Math.ceil(Math.sqrt(min.min.states.length * 1.5));
+                min.min.states.forEach((s, idx) => {
+                  s.x = 160 + (idx % cols) * 190;
+                  s.y = 150 + Math.floor(idx / cols) * 140;
+                });
+                built = { states: min.min.states, trans: min.min.trans };
+              } else {
+                built = dfaConverted;
+              }
+              typeLabel = 'Minimized DFA';
+            }
+
+            if (!built || !built.states || !built.states.length) {
+              showToast('Could not generate automaton from expression.', 'err');
+              return false;
+            }
+
+            mutate(() => {
+              dfa = built;
+              sel = null;
+              definedAlpha = alpha;
+              autoAlpha = true;
+              if ($('#alphaInput')) $('#alphaInput').value = alpha.join(', ');
+            });
+
+            syncAlphabetFromTransitions();
+            fitView();
+            afterChange(true);
+            showToast(`Generated ${typeLabel} (${built.states.length} states) for "${val}"!`, 'ok');
+            return true;
+          } catch (err) {
+            showToast(`Regex Error: ${err.message}`, 'err');
+            return false;
+          }
+        }
+      },
+      { label: 'Cancel' }
+    ]
+  });
+
+  $$('input[name="regexTarget"]').forEach(r => {
+    r.addEventListener('change', () => {
+      $$('.pill-radio').forEach(p => p.classList.remove('active'));
+      const parent = r.closest('.pill-radio');
+      if (parent) parent.classList.add('active');
+    });
+  });
+
+  $$('.regex-preset-btn').forEach(btn => {
+    btn.onclick = () => {
+      $('#inRegexStr').value = btn.dataset.val;
+      $('#inRegexStr').focus();
+    };
+  });
+}
+
+/* =========================================================================
+   Dock View Switching & Resizing Splitter
+   ========================================================================= */
+
+function switchDockView(tabName) {
+  activeDockTab = tabName;
+  $$('.view-tab-btn').forEach(b => {
+    const isAct = b.dataset.view === tabName;
+    b.classList.toggle('active', isAct);
+    b.setAttribute('aria-selected', isAct ? 'true' : 'false');
+  });
+
+  $('#viewSim').classList.toggle('active', tabName === 'sim');
+  $('#viewTable').classList.toggle('active', tabName === 'table');
+  $('#viewClosure').classList.toggle('active', tabName === 'closure');
+  $('#viewSubset').classList.toggle('active', tabName === 'subset');
+  $('#viewMin').classList.toggle('active', tabName === 'min');
+
+  const titles = {
+    sim: 'Interactive Simulator & Execution Trace',
+    table: 'Transition Table δ(q, a)',
+    closure: 'ε-Closure Calculation & Analysis',
+    subset: 'NFA to DFA Conversion (Subset Construction)',
+    min: 'DFA Minimization & State Equivalence'
+  };
+  $('#splitterTitle').textContent = titles[tabName] || 'Panel';
+
+  $('#dockPanel').classList.remove('collapsed');
+  $('#dockToggle').textContent = 'Collapse';
+}
+
+$$('.view-tab-btn').forEach(b => {
+  b.addEventListener('click', () => switchDockView(b.dataset.view));
+});
+
+// Resizable Splitter
+const splitter = $('#splitter');
+const dockPanel = $('#dockPanel');
+let splitterDragging = false;
+let splitterStartY = 0;
+let splitterStartH = 330;
+
+splitter.addEventListener('pointerdown', e => {
+  if (e.target.closest('.splitter-toggle')) return;
+  splitterDragging = true;
+  splitterStartY = e.clientY;
+  splitterStartH = dockPanel.offsetHeight;
+  splitter.classList.add('active');
+  try { splitter.setPointerCapture(e.pointerId); } catch (_) {}
+});
+
+splitter.addEventListener('pointermove', e => {
+  if (!splitterDragging) return;
+  const dy = splitterStartY - e.clientY;
+  const newH = Math.max(80, Math.min(window.innerHeight * 0.75, splitterStartH + dy));
+  dockPanel.style.height = newH + 'px';
+});
+
+splitter.addEventListener('pointerup', () => {
+  splitterDragging = false;
+  splitter.classList.remove('active');
+});
+
+// Toggle collapse dock
+$('#dockToggle').addEventListener('click', () => {
+  const isCollapsed = dockPanel.classList.toggle('collapsed');
+  $('#dockToggle').textContent = isCollapsed ? 'Expand' : 'Collapse';
+});
+
+// Double click splitter header to toggle
+splitter.addEventListener('dblclick', e => {
+  if (e.target.closest('.splitter-toggle')) return;
+  $('#dockToggle').click();
+});
+
+/* ---------- Simulator Column Partition Splitter ---------- */
+const simSplitter = $('#simColSplitter');
+const simStatusCol = $('#simStatusCol');
+const simMainGrid = $('#simMainGrid');
+
+if (simSplitter && simStatusCol && simMainGrid) {
+  let simSplitDragging = false;
+  let simSplitStartX = 0;
+  let simSplitStartW = 0;
+
+  simSplitter.addEventListener('pointerdown', e => {
+    simSplitDragging = true;
+    simSplitStartX = e.clientX;
+    simSplitStartW = simStatusCol.getBoundingClientRect().width;
+    simSplitter.classList.add('active');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'col-resize';
+    try { simSplitter.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  simSplitter.addEventListener('pointermove', e => {
+    if (!simSplitDragging) return;
+    const dx = e.clientX - simSplitStartX;
+    const totalW = simMainGrid.getBoundingClientRect().width;
+    const minLeft = 240;
+    const minRight = 250;
+    const maxLeft = Math.max(minLeft, totalW - minRight - 12);
+    const newW = Math.max(minLeft, Math.min(maxLeft, simSplitStartW + dx));
+    const pct = ((newW / totalW) * 100).toFixed(2);
+    simStatusCol.style.width = `${pct}%`;
+  });
+
+  const endSimSplitDrag = (e) => {
+    if (!simSplitDragging) return;
+    simSplitDragging = false;
+    simSplitter.classList.remove('active');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+    if (e && e.pointerId) {
+      try { simSplitter.releasePointerCapture(e.pointerId); } catch (_) {}
+    }
+    try {
+      localStorage.setItem('automata_sim_col_width', simStatusCol.style.width);
+    } catch (_) {}
+  };
+
+  simSplitter.addEventListener('pointerup', endSimSplitDrag);
+  simSplitter.addEventListener('pointercancel', endSimSplitDrag);
+
+  // Double-click to reset to default 42%
+  simSplitter.addEventListener('dblclick', () => {
+    simStatusCol.style.width = '42%';
+    try {
+      localStorage.removeItem('automata_sim_col_width');
+    } catch (_) {}
+    showToast('Reset simulator partition to default 42% / 58% split.', 'ok');
+  });
+
+  // Restore saved partition width on boot
+  try {
+    const savedColW = localStorage.getItem('automata_sim_col_width');
+    if (savedColW && savedColW.endsWith('%')) {
+      simStatusCol.style.width = savedColW;
+    }
+  } catch (_) {}
+}
+
+/* =========================================================================
+   Menu Bar Configuration with Rich Pre-Generated Automata Library
+   ========================================================================= */
+
+const MENUS = {
+  File: [
+    ['New Automaton', clearAutomaton, 'Ctrl+N'],
+    ['Restore Default Benchmark (7 States)', () => { loadExample('seven'); showToast('Restored 7-State Benchmark DFA', 'ok'); }],
+    ['-'],
+    ['DFA: 7 States (Minimization Benchmark)', () => loadExample('seven')],
+    ["DFA: Binary Ending in '01'", () => loadExample('ends01')],
+    ['DFA: Even 0s and Even 1s (Parity)', () => loadExample('even01')],
+    ['DFA: Binary Divisible by 3', () => loadExample('div3')],
+    ["DFA: Substring 'aba'", () => loadExample('substr_aba')],
+    ['-'],
+    ["NFA: Ending in '01' (Non-deterministic)", () => loadExample('nfa_ends01')],
+    ["NFA: Contains '00' or '11'", () => loadExample('nfa_substr_00')],
+    ['-'],
+    ["Null-NFA (ε-NFA): (0|1)*01 with ε-moves", () => loadExample('null_nfa_star')],
+    ["Null-NFA (ε-NFA): a* b* c* with ε-moves", () => loadExample('null_nfa_abc')],
+    ['-'],
+    ['Export / Import JSON…', jsonDialog]
+  ],
+  Edit: [
+    ['Undo', undo, 'Ctrl+Z'],
+    ['Redo', redo, 'Ctrl+Y'],
+    ['-'],
+    ['Select Tool', () => setTool('select'), 'V'],
+    ['State Creator', () => setTool('state'), 'S'],
+    ['Transition Creator', () => setTool('trans'), 'T'],
+    ['Delete Tool', () => setTool('del'), 'D']
+  ],
+  Build: [
+    ['Build Automaton from Regular Expression…', () => openRegexModal('eps_nfa')],
+    ['-'],
+    ['Build ε-NFA (Thompson’s Construction)…', () => openRegexModal('eps_nfa')],
+    ['Build NFA (Standard, No ε-Moves)…', () => openRegexModal('nfa')],
+    ['Build DFA (Deterministic Finite Automaton)…', () => openRegexModal('dfa')],
+    ['Build Minimized DFA (Hopcroft / Moore)…', () => openRegexModal('min_dfa')]
+  ],
+  Alphabet: [
+    ['Binary Alphabet Σ = {0, 1}', () => { definedAlpha = ['0', '1']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {0, 1}', 'ok'); }],
+    ['Letters Σ = {a, b}', () => { definedAlpha = ['a', 'b']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {a, b}', 'ok'); }],
+    ['Letters Σ = {a, b, c}', () => { definedAlpha = ['a', 'b', 'c']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {a, b, c}', 'ok'); }],
+    ['Auto-Detect from Transitions', () => { autoAlpha = true; $('#chkAutoAlpha').checked = true; syncAlphabetFromTransitions(); afterChange(true); showToast('Auto-detect alphabet enabled.', 'ok'); }]
+  ],
+  Input: [
+    ['Run Input Simulator', () => { switchDockView('sim'); $('#btnSimRun').click(); }],
+    ['Step Forward', simStepNext],
+    ['Reset Simulation', simReset]
+  ],
+  Convert: [
+    ['Convert NFA / ε-NFA to DFA (Subset Construction)', () => {
+      switchDockView('subset');
+      showToast('Subset Construction table opened.', 'ok');
+    }],
+    ['Apply Converted DFA to Canvas', applyConvertedDfaToCanvas],
+    ['-'],
+    ['Calculate ε-Closure Table', () => {
+      switchDockView('closure');
+      showToast('ε-Closure table calculated.', 'ok');
+    }],
+    ['Transition Table δ(q, a)', () => {
+      switchDockView('table');
+    }],
+    ['-'],
+    ['Minimize DFA (Hopcroft / Moore)', () => {
+      switchDockView('min');
+      recomputeAll();
+      showToast('Automaton minimized.', 'ok');
+    }],
+    ['Apply Minimized DFA to Canvas', applyMinimizedDfaToCanvas]
+  ],
+  View: [
+    ['Fit Automaton to Window', fitView],
+    ['Center View at (0, 0)', centerView],
+    ['Zoom to 100%', () => setZoom(1)],
+    ['-'],
+    ['Theme: Dark', () => setTheme('dark')],
+    ['Theme: Light', () => setTheme('light')],
+    ['Theme: High Contrast', () => setTheme('high-contrast')]
+  ]
+};
+
+(function buildMenus() {
+  try {
+    const bar = $('#menubar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    Object.keys(MENUS).forEach(name => {
+      const wrap = document.createElement('div');
+      wrap.className = 'menuwrap';
+      
+      const btn = document.createElement('button');
+      btn.className = 'menubtn';
+      btn.setAttribute('aria-haspopup', 'true');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.textContent = name;
+
+      const menu = document.createElement('div');
+      menu.className = 'menu';
+      menu.setAttribute('role', 'menu');
+      menu.hidden = true;
+
+      wrap.appendChild(btn);
+      wrap.appendChild(menu);
+
+      MENUS[name].forEach(it => {
+        if (it[0] === '-') {
+          menu.appendChild(document.createElement('hr'));
+          return;
+        }
+        const b = document.createElement('button');
+        b.setAttribute('role', 'menuitem');
+        b.innerHTML = `<span>${esc(it[0])}</span>${it[2] ? `<span class="shortcut">${esc(it[2])}</span>` : ''}`;
+        b.addEventListener('click', () => { closeMenus(); it[1](); });
+        menu.appendChild(b);
+      });
+
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = menu.hidden;
+        closeMenus();
+        if (open) {
+          menu.hidden = false;
+          btn.setAttribute('aria-expanded', 'true');
+          const first = menu.querySelector('button');
+          if (first) first.focus();
+        }
+      });
+
+      bar.appendChild(wrap);
+    });
+  } catch (err) {
+    console.error('Error building menubar:', err);
+  }
+})();
+
+function closeMenus() {
+  $$('.menu').forEach(m => { m.hidden = true; });
+  $$('.menubtn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menuwrap')) closeMenus();
+});
+
+/* ---------- Dialogs ---------- */
+let activeDlg = null;
+function closeDialog() {
+  if (!activeDlg) return;
+  activeDlg.el.remove();
+  activeDlg = null;
+}
+
+function openDialog(o) {
+  closeDialog();
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `
+    <div class="dlg ${o.wide ? 'wide' : ''}" role="dialog" aria-modal="true">
+      <div class="dlg-title">
+        <span>${esc(o.title || 'Dialog')}</span>
+        <button class="x" aria-label="Close">×</button>
+      </div>
+      <div class="dlg-body">${o.body}</div>
+      <div class="dlg-btns"></div>
+    </div>
+  `;
+  const btns = ov.querySelector('.dlg-btns');
+  const cancelBtn = o.buttons.find(b => b.cancel) || o.buttons[o.buttons.length - 1];
+
+  o.buttons.forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'btn' + (b.primary ? ' primary' : '');
+    el.textContent = b.label;
+    el.onclick = () => {
+      const res = b.act ? b.act() : undefined;
+      if (res !== false) closeDialog();
+    };
+    btns.appendChild(el);
+  });
+
+  ov.querySelector('.x').onclick = () => closeDialog();
+  ov.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDialog();
+  });
+
+  document.body.appendChild(ov);
+  activeDlg = { el: ov };
+  const firstInput = ov.querySelector('input, textarea, button.primary');
+  if (firstInput) firstInput.focus();
+}
+
+function jsonDialog() {
+  const data = JSON.stringify({ states: dfa.states, trans: dfa.trans, definedAlpha, autoAlpha }, null, 2);
+  openDialog({
+    title: 'Automaton JSON Import / Export',
+    wide: true,
+    body: `
+      <p style="color:var(--ink2);">Copy the JSON below to save your automaton, or paste saved JSON and click Load.</p>
+      <div class="field">
+        <label for="jsonTa">Automaton Specification JSON</label>
+        <textarea id="jsonTa" spellcheck="false">${esc(data)}</textarea>
+      </div>
+      <p id="jsonErr" style="color:var(--bad);font-weight:600;min-height:1.2em;"></p>
+    `,
+    buttons: [
+      {
+        label: 'Copy to Clipboard',
+        act: () => {
+          const ta = $('#jsonTa');
+          ta.select();
+          navigator.clipboard.writeText(ta.value).then(() => {
+            $('#jsonErr').style.color = 'var(--good)';
+            $('#jsonErr').textContent = 'Copied to clipboard!';
+          });
+          return false;
+        }
+      },
+      {
+        label: 'Load JSON',
+        primary: true,
+        act: () => {
+          try {
+            const parsed = JSON.parse($('#jsonTa').value);
+            if (!Array.isArray(parsed.states) || !Array.isArray(parsed.trans)) {
+              throw new Error('JSON must contain "states" and "trans" arrays.');
+            }
+            let foundInit = false;
+            parsed.states.forEach(st => {
+              if (st.initial) {
+                if (foundInit) st.initial = false;
+                else foundInit = true;
+              }
+            });
+
+            mutate(() => {
+              dfa = { states: parsed.states, trans: parsed.trans };
+              if (parsed.definedAlpha) definedAlpha = parsed.definedAlpha;
+              if (parsed.autoAlpha !== undefined) autoAlpha = parsed.autoAlpha;
+              sel = null;
+            });
+            afterChange(true);
+            fitView();
+            showToast('Automaton loaded from JSON.', 'ok');
+            return true;
+          } catch (err) {
+            $('#jsonErr').style.color = 'var(--bad)';
+            $('#jsonErr').textContent = 'Error: ' + err.message;
+            return false;
+          }
+        }
+      },
+      { label: 'Close', cancel: true }
+    ]
+  });
+}
+
+function helpDialog() {
+  openDialog({
+    title: 'Automata Studio Guide & Capabilities',
+    wide: true,
+    body: `
+      <div style="display:grid;gap:12px;line-height:1.6;">
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">1. Full Support for DFA, NFA &amp; Null-NFA (ε-NFA)</h4>
+          <p>• <b>DFA:</b> Deterministic state moves with single target per symbol.<br>
+          • <b>NFA:</b> Multiple transitions on the same symbol from a single state.<br>
+          • <b>Null-NFA (ε-NFA):</b> Transitions that consume no input using <code>ε</code> (click the <code>+ ε</code> button in the transition popup, or type <code>eps</code>, <code>null</code>, or <code>ε</code>).</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">2. States &amp; Visual Styles</h4>
+          <p>• <b>Create States:</b> State Tool (<kbd>S</kbd>) or double-click canvas.<br>
+          • <b>Initial State (Green):</b> Click "Set as Initial" in inspector. A prominent green arrow appears pointing into the state. Only one state can be initial.<br>
+          • <b>Final / Accepting State (Yellow):</b> Click "Mark Final" in inspector. Displays yellow fill with double concentric circles.<br>
+          • <b>Move States:</b> Select Tool (<kbd>V</kbd>) lets you drag any state across the canvas freely, and dragging empty space pans the view.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">3. Universal Simulator &amp; Subset Trace</h4>
+          <p>For NFAs and Null-NFAs, the simulator calculates the <b>ε-closure</b> and tracks the <b>subset of all active states</b> simultaneously. All active states glow on the canvas at each step!</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">4. Minimization &amp; "Apply to Canvas"</h4>
+          <p>For any automaton (DFA, NFA, or ε-NFA), the minimizer converts it to equivalent minimal form. Click <b>"Apply Minimized DFA to Canvas"</b> to immediately generate the minimal machine on the canvas!</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">5. Pre-Generated Machines</h4>
+          <p>Explore the <b>File</b> menu for 10 built-in machines covering parity DFAs, modular arithmetic, substring detectors, NFAs, and ε-NFAs.</p>
+        </div>
+      </div>
+    `,
+    buttons: [{ label: 'Got It', primary: true }]
+  });
+}
+
+/* ---------- Theme Switcher ---------- */
+function setTheme(name) {
+  document.documentElement.setAttribute('data-theme', name);
+  const labels = {
+    'dark': 'Dark Theme',
+    'light': 'Light Theme',
+    'high-contrast': 'High Contrast Theme'
+  };
+  saveToStorage();
+  showToast(`Switched to ${labels[name] || name}.`, 'ok');
+}
+
+$('#btnHelpTop').onclick = helpDialog;
+if ($('#btnRegexNfa')) $('#btnRegexNfa').onclick = openRegexModal;
+
+/* ---------- Initial Boot & State Restoration ---------- */
+setTool('select');
+
+function loadInitialState() {
+  let restored = false;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data && data.dfa && Array.isArray(data.dfa.states) && data.dfa.states.length > 0) {
+        dfa = {
+          states: data.dfa.states.map(s => Object.assign({}, s)),
+          trans: (data.dfa.trans || []).map(t => ({
+            from: t.from,
+            to: t.to,
+            syms: sortSyms(t.syms),
+            loopAngle: t.loopAngle !== undefined ? t.loopAngle : null
+          }))
+        };
+        if (Array.isArray(data.definedAlpha)) definedAlpha = data.definedAlpha;
+        if (data.autoAlpha !== undefined) {
+          autoAlpha = data.autoAlpha;
+          if ($('#chkAutoAlpha')) $('#chkAutoAlpha').checked = autoAlpha;
+        }
+        if (data.simInputStr) {
+          if ($('#simInputStr')) $('#simInputStr').value = data.simInputStr;
+          if ($('#tbQuickInput')) $('#tbQuickInput').value = data.simInputStr;
+        }
+        if (data.theme) {
+          document.documentElement.setAttribute('data-theme', data.theme);
+        }
+        if (data.view && typeof data.view.ox === 'number') {
+          canvasView.ox = data.view.ox;
+          canvasView.oy = data.view.oy;
+          canvasView.z = data.view.z || 1;
+        }
+        restored = true;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not restore saved automaton:', err);
+  }
+
+  if (!restored) {
+    // First-time visit: load standard 7-state minimization benchmark
+    loadExample('seven');
+  } else {
+    syncAlphabetFromTransitions();
+    afterChange(true);
+    redrawCanvas();
+  }
+}
+
+loadInitialState();
+runSimulation($('#simInputStr') ? $('#simInputStr').value.trim() : '0101', false);
+</script>
+</body>
+</html>
