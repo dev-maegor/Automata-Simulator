@@ -1,0 +1,3638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automata Studio - DFA Simulator &amp; Minimizer</title>
+<style>
+:root {
+  --ui: "Segoe UI", -apple-system, BlinkMacSystemFont, Tahoma, Verdana, sans-serif;
+  --mono: "Cascadia Code", Consolas, "Courier New", monospace;
+  
+  /* Dark Theme (Default) */
+  --bg: #141816;
+  --win: #1c221e;
+  --bar: #232a26;
+  --bar-hover: #2c3530;
+  --btn: #2a332d;
+  --btn-hover: #36423a;
+  --btn-active: #3e4d44;
+  --line: #3b4740;
+  --line-strong: #4f5f56;
+  --canvas: #101311;
+  --grid: #181d19;
+  
+  --title: #1a2c3d;
+  --title-ink: #f0f4f8;
+  --ink: #e6eae4;
+  --ink2: #9aa69d;
+  --ink3: #6b776f;
+  
+  --accent: #327ec2;
+  --accent-hover: #4090d8;
+  --accent-ink: #ffffff;
+  --accent-soft: #193247;
+  
+  /* Normal State: Slate / Cyan */
+  --state: #204c5e;
+  --state-edge: #479bb8;
+  --state-ink: #edf7fa;
+  
+  /* Initial State: GREEN */
+  --init: #154627;
+  --init-edge: #22c55e;
+  --init-ink: #f0fdf4;
+  
+  /* Final State: YELLOW */
+  --final: #543f08;
+  --final-edge: #eab308;
+  --final-ink: #fefce8;
+
+  --edge: #cfd8d2;
+  --edge-sel: #38bdf8;
+  
+  --good: #22c55e;
+  --good-soft: #143520;
+  --good-edge: #2e7d32;
+  --bad: #ef4444;
+  --bad-soft: #391717;
+  --bad-edge: #c62828;
+  --warn: #f59e0b;
+  --warn-soft: #38280f;
+
+  --sim-active: #38bdf8;
+  --sim-pulse: rgba(56, 189, 248, 0.4);
+}
+
+:root[data-theme="light"] {
+  --bg: #e2e7df;
+  --win: #eff3ed;
+  --bar: #e0e5dd;
+  --bar-hover: #d4dad1;
+  --btn: #e3e8e0;
+  --btn-hover: #d6dcd3;
+  --btn-active: #c8cfc5;
+  --line: #afb8ab;
+  --line-strong: #8c9788;
+  --canvas: #fafbfa;
+  --grid: #eef2eb;
+  
+  --title: #2d4860;
+  --title-ink: #ffffff;
+  --ink: #19211c;
+  --ink2: #515d55;
+  --ink3: #7b877f;
+  
+  --accent: #2167a5;
+  --accent-hover: #185386;
+  --accent-ink: #ffffff;
+  --accent-soft: #d6e5f5;
+  
+  --state: #98cfdf;
+  --state-edge: #23657b;
+  --state-ink: #0d2833;
+  
+  /* Initial State: GREEN */
+  --init: #bbf7d0;
+  --init-edge: #15803d;
+  --init-ink: #14532d;
+  
+  /* Final State: YELLOW */
+  --final: #fef08a;
+  --final-edge: #a16207;
+  --final-ink: #713f12;
+
+  --edge: #232b26;
+  --edge-sel: #0284c7;
+  
+  --good: #16a34a;
+  --good-soft: #dcfce7;
+  --good-edge: #15803d;
+  --bad: #dc2626;
+  --bad-soft: #fee2e2;
+  --bad-edge: #b91c1c;
+  --warn: #d97706;
+  --warn-soft: #fef3c7;
+
+  --sim-active: #0284c7;
+  --sim-pulse: rgba(2, 132, 199, 0.35);
+}
+
+:root[data-theme="high-contrast"] {
+  --bg: #000000;
+  --win: #0a0a0a;
+  --bar: #141414;
+  --bar-hover: #242424;
+  --btn: #181818;
+  --btn-hover: #2e2e2e;
+  --btn-active: #404040;
+  --line: #ffffff;
+  --line-strong: #ffffff;
+  --canvas: #000000;
+  --grid: #242424;
+  
+  --title: #000000;
+  --title-ink: #ffffff;
+  --ink: #ffffff;
+  --ink2: #e0e0e0;
+  --ink3: #aaaaaa;
+  
+  --accent: #00e5ff;
+  --accent-hover: #33ebff;
+  --accent-ink: #000000;
+  --accent-soft: #002b33;
+  
+  --state: #002b4d;
+  --state-edge: #00a2ff;
+  --state-ink: #ffffff;
+  
+  /* Initial State: BOLD HIGH CONTRAST GREEN */
+  --init: #003314;
+  --init-edge: #00ff66;
+  --init-ink: #ffffff;
+  
+  /* Final State: BOLD HIGH CONTRAST YELLOW */
+  --final: #332b00;
+  --final-edge: #ffff00;
+  --final-ink: #ffffff;
+
+  --edge: #ffffff;
+  --edge-sel: #00e5ff;
+  
+  --good: #00ff66;
+  --good-soft: #002b11;
+  --good-edge: #00ff66;
+  --bad: #ff3333;
+  --bad-soft: #330000;
+  --bad-edge: #ff3333;
+  --warn: #ffff00;
+  --warn-soft: #332b00;
+
+  --sim-active: #00e5ff;
+  --sim-pulse: rgba(0, 229, 255, 0.5);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--ui);
+  font-size: 13px;
+  line-height: 1.4;
+  background: var(--bg);
+  color: var(--ink);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+}
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Main Full-Page Shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Header & Titlebar */
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background: var(--title);
+  color: var(--title-ink);
+  border-bottom: 1px solid rgba(0,0,0,0.35);
+  flex-shrink: 0;
+  height: 32px;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.header-left svg { flex-shrink: 0; }
+.header-left .sub { opacity: 0.75; font-weight: 400; font-size: 12px; }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 3px;
+  padding: 2px 10px;
+  font-size: 11.5px;
+  color: var(--title-ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.header-btn:hover { background: rgba(255,255,255,0.2); }
+
+/* Menubar */
+.menubar {
+  display: flex;
+  align-items: center;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  padding: 1px 6px;
+  flex-shrink: 0;
+}
+.menuwrap { position: relative; }
+.menubtn {
+  background: none;
+  border: 1px solid transparent;
+  padding: 3px 9px;
+  font-size: 12.5px;
+  color: var(--ink);
+  border-radius: 2px;
+}
+.menubtn:hover, .menubtn[aria-expanded="true"] {
+  background: var(--bar-hover);
+  border-color: var(--line);
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 250px;
+  background: var(--win);
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+  padding: 3px 0;
+  z-index: 100;
+  border-radius: 2px;
+}
+.menu button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.menu button:hover, .menu button:focus-visible {
+  background: var(--accent);
+  color: var(--accent-ink);
+  outline: none;
+}
+.menu hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 3px 0;
+}
+.menu .shortcut {
+  font-family: var(--mono);
+  font-size: 11px;
+  opacity: 0.65;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.tool {
+  width: 32px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  position: relative;
+}
+.tool svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tool:hover {
+  background: var(--btn-hover);
+  border-color: var(--line-strong);
+}
+.tool[aria-pressed="true"], .tool.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.tool:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.sep {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 4px;
+}
+
+/* Alphabet Configuration in Toolbar */
+.alpha-widget {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-size: 12px;
+}
+.alpha-label {
+  font-weight: 700;
+  font-family: var(--mono);
+  color: var(--accent);
+}
+.alpha-input {
+  width: 90px;
+  padding: 2px 5px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+}
+.alpha-input:focus { border-color: var(--accent); }
+
+/* Quick Actions & View Tabs */
+.tb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.view-tabs {
+  display: flex;
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px;
+  gap: 2px;
+}
+.view-tab-btn {
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.view-tab-btn:hover { color: var(--ink); }
+.view-tab-btn.active {
+  background: var(--win);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.btn {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover {
+  background: var(--btn-hover);
+  border-color: var(--line-strong);
+}
+.btn.sm { padding: 2px 8px; font-size: 11.5px; }
+.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+.btn.primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn-icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Inspector Bar */
+.inspector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 34px;
+  padding: 4px 14px;
+  background: var(--win);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--ink2);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.inspector strong { color: var(--ink); font-weight: 600; }
+.inspector label { display: flex; align-items: center; gap: 6px; }
+.inspector input[type="text"] {
+  width: 9ch;
+  padding: 2px 6px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--mono);
+  color: var(--ink);
+}
+.inspector input.syms { width: 14ch; }
+.pill {
+  border: 1px solid var(--line);
+  background: var(--btn);
+  border-radius: 3px;
+  padding: 2px 10px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+.pill:hover { background: var(--btn-hover); }
+.pill[aria-pressed="true"], .pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.pill.active-init {
+  background: var(--init);
+  border-color: var(--init-edge);
+  color: var(--init-ink);
+  font-weight: 600;
+}
+.pill.active-fin {
+  background: var(--final);
+  border-color: var(--final-edge);
+  color: var(--final-ink);
+  font-weight: 600;
+}
+.pill.danger { color: var(--bad); }
+.pill.danger:hover { background: var(--bad-soft); }
+
+/* Main Workspace Area */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Canvas Area */
+.canvaswrap {
+  flex: 1;
+  position: relative;
+  background: var(--canvas);
+  min-height: 140px;
+  overflow: hidden;
+}
+.canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+  background: var(--canvas);
+}
+.canvas[data-tool="state"], .canvas[data-tool="trans"] { cursor: crosshair; }
+.canvas[data-tool="del"] { cursor: not-allowed; }
+.canvas[data-tool="move"] { cursor: grab; }
+.canvas.dragging-move { cursor: grabbing !important; }
+
+/* SVG Automaton Rendering */
+.st { cursor: grab; }
+.st .body {
+  fill: var(--state);
+  stroke: var(--state-edge);
+  stroke-width: 1.8;
+  transition: stroke 0.15s, fill 0.15s;
+}
+
+/* INITIAL STATE: GREEN */
+.st.init .body {
+  fill: var(--init);
+  stroke: var(--init-edge);
+  stroke-width: 2.2;
+}
+.st.init text {
+  fill: var(--init-ink);
+}
+
+/* FINAL STATE: YELLOW */
+.st.fin:not(.init) .body {
+  fill: var(--final);
+  stroke: var(--final-edge);
+  stroke-width: 2.2;
+}
+.st.fin:not(.init) text {
+  fill: var(--final-ink);
+}
+.st.fin .ring {
+  fill: none;
+  stroke: var(--final-edge);
+  stroke-width: 2px;
+}
+
+/* BOTH INITIAL & FINAL: GREEN BODY WITH YELLOW CONCENTRIC CIRCLE */
+.st.init.fin .body {
+  fill: var(--init);
+  stroke: var(--init-edge);
+  stroke-width: 2.2;
+}
+.st.init.fin .ring {
+  fill: none;
+  stroke: var(--final-edge);
+  stroke-width: 2.2px;
+}
+
+/* Initial State Arrow Indicator (Green, bold, unmistakable) */
+.st .init-arrow-group line {
+  stroke: var(--init-edge);
+  stroke-width: 2.5px;
+  stroke-linecap: round;
+}
+.st .init-arrow-group polygon {
+  fill: var(--init-edge);
+}
+
+.st text {
+  font: 600 13px var(--ui);
+  fill: var(--state-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.st text.sub { font: 11px var(--mono); fill: var(--ink2); }
+.st.sel .body { stroke: var(--edge-sel); stroke-width: 3.5; }
+
+/* Simulation highlight on canvas */
+.st.sim-active .body {
+  stroke: var(--sim-active) !important;
+  stroke-width: 4px !important;
+  filter: drop-shadow(0 0 6px var(--sim-pulse));
+}
+.st.sim-active .pulse-ring {
+  fill: none;
+  stroke: var(--sim-active);
+  stroke-width: 2px;
+  animation: pulse 1.2s infinite ease-out;
+}
+@keyframes pulse {
+  0% { r: 24px; opacity: 0.9; }
+  100% { r: 40px; opacity: 0; }
+}
+
+.edge .ln { fill: none; stroke: var(--edge); stroke-width: 1.6; transition: stroke 0.15s; }
+.edge .hit { fill: none; stroke: transparent; stroke-width: 20; pointer-events: stroke; cursor: pointer; }
+.edge .lb {
+  font: 600 12.5px var(--mono);
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+  paint-order: stroke;
+  stroke: var(--canvas);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.edge.sel .ln { stroke: var(--edge-sel); stroke-width: 2.8; }
+.edge.sim-active .ln {
+  stroke: var(--sim-active) !important;
+  stroke-width: 3.2px !important;
+  filter: drop-shadow(0 0 6px var(--sim-pulse));
+}
+
+.mk path { fill: var(--edge); }
+.mk-sel path { fill: var(--edge-sel); }
+.mk-sim path { fill: var(--sim-active); }
+.rubber { stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 4; fill: none; }
+
+/* Move Tool Bounding Box for Machine */
+.machine-box {
+  fill: rgba(50, 126, 194, 0.05);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  rx: 4;
+  pointer-events: none;
+}
+.machine-tag rect {
+  fill: var(--accent);
+  rx: 2;
+}
+.machine-tag text {
+  fill: #fff;
+  font: 600 11px var(--ui);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+/* Floating Label Input for Transition */
+.lbl {
+  position: absolute;
+  z-index: 50;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  background: var(--win);
+  border: 1px solid var(--accent);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  padding: 4px;
+  border-radius: 4px;
+}
+.lbl input {
+  width: 11ch;
+  padding: 3px 6px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--mono);
+}
+
+/* Floating Canvas Controls Overlay */
+.canvas-float {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--win);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  color: var(--ink2);
+  z-index: 10;
+}
+.canvas-float input[type="range"] {
+  width: 80px;
+  accent-color: var(--accent);
+}
+.canvas-float .hint {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+/* Splitter Bar */
+.splitter {
+  height: 9px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  cursor: row-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  z-index: 20;
+}
+.splitter:hover, .splitter.active { background: var(--accent-soft); }
+.splitter-handle {
+  width: 40px;
+  height: 3px;
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+.splitter-title {
+  position: absolute;
+  left: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink2);
+}
+.splitter-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: 0;
+  font-size: 11.5px;
+  color: var(--ink2);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.splitter-toggle:hover { color: var(--ink); background: var(--win); }
+
+/* Bottom Dock Panel */
+.dock-panel {
+  background: var(--win);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 330px;
+  min-height: 60px;
+  max-height: 85vh;
+  flex-shrink: 0;
+}
+.dock-panel.collapsed { height: 0 !important; min-height: 0 !important; display: none; }
+
+.dock-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+.dock-view {
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  overflow: auto;
+}
+.dock-view.active { display: flex; }
+
+/* Simulator Tab Styles */
+.sim-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.sim-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bar);
+  border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.sim-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sim-input-wrap label { font-weight: 600; font-size: 12px; }
+.sim-input {
+  width: 200px;
+  padding: 3px 8px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+  letter-spacing: 0.06em;
+}
+.sim-input:focus { border-color: var(--accent); }
+.sim-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.chip-btn {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 7px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink);
+}
+.chip-btn:hover { background: var(--btn-hover); border-color: var(--accent); }
+
+.sim-speed-select {
+  background: var(--btn);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 3px 6px;
+  font-size: 11.5px;
+  color: var(--ink);
+}
+
+/* Simulator Main Split */
+.sim-main-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 1.1fr) minmax(380px, 1.4fr);
+  gap: 12px;
+  padding: 10px 14px;
+  overflow: auto;
+}
+@media (max-width: 900px) {
+  .sim-main-grid { grid-template-columns: 1fr; }
+}
+
+.sim-card {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.sim-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Tape Representation */
+.tape-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tape-label {
+  font-size: 11.5px;
+  color: var(--ink2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tape-scroll-wrap {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.tape-strip {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--win);
+  padding: 2px;
+  gap: 2px;
+  min-height: 48px;
+}
+.tape-cell {
+  width: 36px;
+  height: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  position: relative;
+  transition: all 0.2s;
+}
+.tape-cell.head {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: #fff;
+}
+.tape-cell.head::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 6px solid var(--accent);
+}
+.tape-cell.consumed {
+  color: var(--ink3);
+  background: rgba(0,0,0,0.2);
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.tape-cell.empty-msg {
+  width: auto;
+  padding: 0 14px;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+/* Result Banner */
+.result-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  background: var(--win);
+  transition: all 0.2s;
+}
+.result-banner.ready {
+  border-color: var(--line);
+  background: var(--win);
+}
+.result-banner.accepted {
+  border-color: var(--good);
+  background: var(--good-soft);
+}
+.result-banner.rejected {
+  border-color: var(--bad);
+  background: var(--bad-soft);
+}
+.result-banner.running {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.res-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: var(--btn);
+  color: var(--ink);
+}
+.res-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.result-banner.accepted .res-icon { background: var(--good); color: #fff; }
+.result-banner.rejected .res-icon { background: var(--bad); color: #fff; }
+.result-banner.running .res-icon { background: var(--accent); color: #fff; }
+
+.res-text { display: flex; flex-direction: column; gap: 2px; }
+.res-status { font-size: 14px; font-weight: 700; letter-spacing: 0.04em; }
+.result-banner.accepted .res-status { color: var(--good); }
+.result-banner.rejected .res-status { color: var(--bad); }
+.result-banner.running .res-status { color: var(--accent); }
+.res-desc { font-size: 12px; color: var(--ink); }
+
+/* Execution Trace Table */
+.trace-table-wrap {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--canvas);
+}
+.trace-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.trace-table th, .trace-table td {
+  padding: 5px 9px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+.trace-table thead th {
+  background: var(--bar);
+  color: var(--ink2);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.trace-table tbody tr { cursor: pointer; transition: background 0.15s; }
+.trace-table tbody tr:hover { background: var(--win); }
+.trace-table tbody tr.active-step {
+  background: var(--accent-soft);
+  outline: 1px solid var(--accent);
+}
+.trace-table .st-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--state);
+  color: var(--state-ink);
+  font-weight: 700;
+}
+.trace-table .st-badge.init {
+  background: var(--init);
+  border: 1px solid var(--init-edge);
+  color: var(--init-ink);
+}
+.trace-table .st-badge.fin {
+  background: var(--final);
+  border: 1px solid var(--final-edge);
+  color: var(--final-ink);
+}
+
+/* Minimizer Tab Styles */
+.min-container {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+.summary-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 14px;
+}
+.stat-box { display: flex; flex-direction: column; }
+.stat-box b { font-size: 20px; font-weight: 700; }
+.stat-box span { font-size: 11.5px; color: var(--ink2); }
+.arrowsep { font-size: 18px; color: var(--ink3); }
+
+.min-subtabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  gap: 4px;
+}
+.min-subtab-btn {
+  background: var(--bar);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: var(--ink2);
+  border-radius: 3px 3px 0 0;
+}
+.min-subtab-btn.active {
+  background: var(--canvas);
+  color: var(--ink);
+  font-weight: 700;
+  border-bottom: 1px solid var(--canvas);
+  margin-bottom: -1px;
+}
+.min-subpanel {
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-top: 0;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+table.dt { border-collapse: collapse; font-family: var(--mono); font-size: 12px; }
+.dt th, .dt td { border: 1px solid var(--line); padding: 4px 10px; text-align: center; }
+.dt thead th { background: var(--bar); color: var(--ink2); }
+.dt tbody th { background: var(--bar); text-align: left; font-weight: 400; }
+.dt tr.dim td, .dt tr.dim th { color: var(--ink3); text-decoration: line-through; }
+
+/* Table filling */
+.tf { border-collapse: separate; border-spacing: 0; font-family: var(--mono); font-size: 12px; }
+.tf th { padding: 4px 8px; background: var(--bar); border: 1px solid var(--line); font-weight: 400; }
+.tf td { padding: 0; border: 1px solid var(--line); width: 42px; height: 34px; }
+.tf td.void { border: 0; background: transparent; }
+.cell {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink2);
+}
+.cell.x { color: var(--bad); font-weight: 700; }
+.cell.eq { background: var(--accent); color: #fff; font-weight: 700; }
+.cell:hover { outline: 2px solid var(--accent); }
+
+/* Transition Table Tab */
+.table-container {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+
+/* Status Bar */
+.statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 12px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--ink2);
+  flex-shrink: 0;
+  height: 24px;
+}
+.statusbar .msg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.statusbar .msg.ok { color: var(--good); font-weight: 600; }
+.statusbar .msg.err { color: var(--bad); font-weight: 600; }
+.statusbar .count { font-family: var(--mono); }
+
+/* Modal Dialogs */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0,0,0,0.65);
+}
+.dlg {
+  width: min(520px, 94vw);
+  background: var(--win);
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dlg.wide { width: min(720px, 94vw); }
+.dlg-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bar);
+  font-weight: 600;
+}
+.dlg-title .x {
+  background: none;
+  border: 0;
+  font-size: 18px;
+  color: var(--ink2);
+  padding: 0 4px;
+}
+.dlg-title .x:hover { color: var(--bad); }
+.dlg-body { padding: 14px; overflow: auto; display: grid; gap: 10px; font-size: 13px; }
+.dlg-btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bar);
+  border-top: 1px solid var(--line);
+}
+.field { display: grid; gap: 5px; }
+.field label { font-weight: 600; font-size: 12px; }
+.field input, .field textarea {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink);
+}
+.field textarea { min-height: 180px; resize: vertical; }
+
+/* Blocks for Moore */
+.blocks { display: flex; flex-wrap: wrap; gap: 6px; }
+.block {
+  padding: 3px 8px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.block i { font-style: normal; font-weight: 700; color: var(--accent); margin-right: 4px; }
+.chip {
+  display: inline-block;
+  padding: 2px 7px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.chip.cls { background: var(--accent-soft); border-color: var(--accent); }
+.chip.dim { opacity: 0.5; text-decoration: line-through; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Titlebar -->
+  <header class="header-bar">
+    <div class="header-left">
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <!-- Initial green circle, Normal state, Final yellow circle -->
+        <circle cx="5" cy="10" r="3.8" fill="var(--init)" stroke="var(--init-edge)" stroke-width="1.5"/>
+        <circle cx="15" cy="10" r="3.8" fill="var(--final)" stroke="var(--final-edge)" stroke-width="1.5"/>
+        <path d="M8.8 10h2.4" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span>Automata Studio <span class="sub">: DFA Simulator &amp; Minimizer</span></span>
+    </div>
+    <div class="header-right">
+      <button class="header-btn" id="btnThemeToggle" title="Cycle Theme (Dark / Light / High Contrast)">
+        <span id="themeBtnLabel">Theme: Dark</span>
+      </button>
+      <button class="header-btn" id="btnHelpTop" title="Help Guide">Help</button>
+    </div>
+  </header>
+
+  <!-- Menubar -->
+  <nav class="menubar" id="menubar" role="menubar" aria-label="Main Menu"></nav>
+
+  <!-- Main Toolbar -->
+  <div class="toolbar" role="toolbar" aria-label="Editor Tools">
+    <div class="tool-group">
+      <button class="tool" data-tool="select" title="Select Tool (V): Click to select & edit states or arrows, drag individual states" aria-label="Select tool">
+        <svg viewBox="0 0 24 24"><path d="M6 3l12 9-5.2 1.2L16 20l-2.6 1-3.2-6.7L6 18z"/></svg>
+      </button>
+      <button class="tool" data-tool="move" title="Move Machine Tool (M): Select and drag the entire automata machine around the canvas" aria-label="Move entire machine tool">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.5 3.5h-2.5v4h4V7l3.5 3.5L17 14v-2.5h-4v4h2.5L12 19l-3.5-3.5h2.5v-4h-4V14L3.5 10.5 7 7v2.5h4v-4H8.5z"/></svg>
+      </button>
+      <button class="tool" data-tool="state" title="State Tool (S): Click anywhere on canvas to create a new state" aria-label="Create state tool">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/></svg>
+      </button>
+      <button class="tool" data-tool="trans" title="Transition Tool (T): Drag from state to state (or loop) to create a transition" aria-label="Create transition tool">
+        <svg viewBox="0 0 24 24"><path d="M3 12h14M12 7l5 5-5 5"/></svg>
+      </button>
+      <button class="tool" data-tool="del" title="Delete Tool (D): Click on any state or arrow to delete it" aria-label="Delete tool">
+        <svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13M10 11v6M14 11v6"/></svg>
+      </button>
+    </div>
+
+    <span class="sep"></span>
+
+    <div class="tool-group">
+      <button class="tool" id="btnUndo" title="Undo (Ctrl+Z)" aria-label="Undo">
+        <svg viewBox="0 0 24 24"><path d="M9 8L4 13l5 5M4 13h10a6 6 0 010 0 6 6 0 016 6"/></svg>
+      </button>
+      <button class="tool" id="btnRedo" title="Redo (Ctrl+Y)" aria-label="Redo">
+        <svg viewBox="0 0 24 24"><path d="M15 8l5 5-5 5M20 13H10a6 6 0 00-6 6"/></svg>
+      </button>
+    </div>
+
+    <span class="sep"></span>
+
+    <!-- Alphabet Configuration -->
+    <div class="alpha-widget" title="Define the Input Alphabet Σ for the automaton">
+      <span class="alpha-label">Σ = {</span>
+      <input type="text" id="alphaInput" class="alpha-input" value="0, 1" spellcheck="false" autocomplete="off" placeholder="e.g. 0, 1 or a, b">
+      <span class="alpha-label">}</span>
+      <button class="btn sm" id="btnSetAlpha" title="Apply defined alphabet">Set</button>
+      <label style="display:flex;align-items:center;gap:3px;font-size:11px;color:var(--ink2);cursor:pointer;" title="Auto-sync alphabet from transitions">
+        <input type="checkbox" id="chkAutoAlpha" checked> Auto
+      </label>
+    </div>
+
+    <span class="sep"></span>
+
+    <div class="tool-group">
+      <button class="btn sm" id="btnFit" title="Fit automaton nicely to window">Fit View</button>
+      <button class="btn sm" id="btnCenter" title="Center view at (0,0)">Center</button>
+    </div>
+
+    <div class="tb-right">
+      <!-- Quick String Simulator Trigger -->
+      <div style="display:flex;align-items:center;gap:4px;">
+        <input type="text" id="tbQuickInput" class="sim-input" style="width:130px;" placeholder="Input string..." value="0101">
+        <button class="btn primary sm" id="btnQuickRun" title="Run input string instantly">
+          <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg> Run
+        </button>
+      </div>
+
+      <div class="view-tabs" role="tablist">
+        <button class="view-tab-btn active" data-view="sim" role="tab" aria-selected="true">Simulator</button>
+        <button class="view-tab-btn" data-view="min" role="tab" aria-selected="false">Minimizer</button>
+        <button class="view-tab-btn" data-view="table" role="tab" aria-selected="false">Transition Table</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inspector Bar -->
+  <div class="inspector" id="inspector" aria-live="polite">
+    <span>Select tool active. Click a state or transition to inspect and edit.</span>
+  </div>
+
+  <!-- Main Canvas Workspace (Full Page Expansion) -->
+  <main class="workspace" id="workspace">
+    <div class="canvaswrap" id="canvasWrap">
+      <svg class="canvas" id="canvasSvg" data-tool="select" role="img" aria-label="Interactive Automata Canvas">
+        <defs>
+          <pattern id="gridPattern" width="30" height="30" patternUnits="userSpaceOnUse">
+            <circle cx="15" cy="15" r="1" fill="var(--grid)"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#gridPattern)" pointer-events="none"/>
+        <g id="canvasG"></g>
+      </svg>
+
+      <!-- Inline Popup for Edge Symbols -->
+      <form class="lbl" id="lbl" hidden>
+        <input id="lblIn" type="text" autocomplete="off" spellcheck="false" placeholder="0, 1" aria-label="Transition symbols">
+        <button class="btn primary sm" type="submit">OK</button>
+      </form>
+
+      <!-- Canvas Floating Zoom Widget -->
+      <div class="canvas-float">
+        <label for="zoomRange">Zoom:</label>
+        <input type="range" id="zoomRange" min="30" max="220" value="100">
+        <span id="zoomOut">100%</span>
+        <span class="sep" style="height:14px;margin:0 2px;"></span>
+        <span class="hint" id="canvasHint">Double-click empty canvas to add state</span>
+      </div>
+    </div>
+
+    <!-- Draggable Splitter Divider -->
+    <div class="splitter" id="splitter" title="Drag up/down to resize bottom dock. Double-click to collapse/expand.">
+      <div class="splitter-handle"></div>
+      <span class="splitter-title" id="splitterTitle">Interactive Simulator &amp; Execution Trace</span>
+      <button class="splitter-toggle" id="dockToggle" title="Toggle panel height">Expand</button>
+    </div>
+
+    <!-- Bottom Resizable Dock Panel -->
+    <section class="dock-panel" id="dockPanel" aria-label="Analysis & Simulation Panel">
+      <div class="dock-content">
+
+        <!-- ================= VIEW 1: INTERACTIVE SIMULATOR & TRACE ================= -->
+        <div class="dock-view active" id="viewSim" role="tabpanel">
+          <div class="sim-container">
+            <div class="sim-controls-bar">
+              <div class="sim-input-wrap">
+                <label for="simInputStr">Input String:</label>
+                <input type="text" id="simInputStr" class="sim-input" value="0101" spellcheck="false" placeholder="e.g. 010101 or empty for ε">
+              </div>
+
+              <div class="sim-chips">
+                <button class="chip-btn" data-sym="0">0</button>
+                <button class="chip-btn" data-sym="1">1</button>
+                <button class="chip-btn" id="btnSimEps" title="Empty string ε">ε (empty)</button>
+                <button class="chip-btn" id="btnSimClear">Clear</button>
+              </div>
+
+              <span class="sep"></span>
+
+              <div class="tool-group">
+                <button class="btn primary sm" id="btnSimRun" title="Run entire string and show final state">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg> Run
+                </button>
+                <button class="btn sm" id="btnSimReset" title="Reset execution to start">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><rect x="2" y="2" width="2.5" height="12"/><polygon points="14,2 5,8 14,14"/></svg> Reset
+                </button>
+                <button class="btn sm" id="btnSimPrev" title="Step backwards">
+                  <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="11,3 4,8 11,13"/></svg> Step Back
+                </button>
+                <button class="btn sm" id="btnSimNext" title="Step forward one symbol">
+                  Step Forward <svg class="btn-icon" viewBox="0 0 16 16"><polygon points="5,3 12,8 5,13"/></svg>
+                </button>
+                <button class="btn sm" id="btnSimPlay" title="Auto-play simulation steps">
+                  <span id="playIconSpan" style="display:inline-flex;align-items:center;"><svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg></span>
+                  <span id="playTextSpan">Auto Play</span>
+                </button>
+              </div>
+
+              <span class="sep"></span>
+
+              <div style="display:flex;align-items:center;gap:4px;">
+                <label for="simSpeedSelect" style="font-size:11.5px;color:var(--ink2);">Speed:</label>
+                <select id="simSpeedSelect" class="sim-speed-select">
+                  <option value="1200">Slow (1.2s)</option>
+                  <option value="600" selected>Normal (0.6s)</option>
+                  <option value="250">Fast (0.25s)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="sim-main-grid">
+              <!-- Left Column: String Tape & Accepted/Rejected Result -->
+              <div class="sim-card">
+                <div class="sim-card-title">
+                  <span>Simulation Status &amp; Tape</span>
+                  <span id="simStepCount" style="font-family:var(--mono);color:var(--accent);font-weight:600;">Step 0 / 0</span>
+                </div>
+
+                <!-- Tape -->
+                <div class="tape-container">
+                  <div class="tape-label">
+                    <span>Tape Head (Current Input Symbol):</span>
+                    <span id="tapePosLabel" style="font-family:var(--mono);">Head: 0</span>
+                  </div>
+                  <div class="tape-scroll-wrap">
+                    <div class="tape-strip" id="tapeStrip"></div>
+                  </div>
+                </div>
+
+                <!-- Result Banner -->
+                <div class="result-banner ready" id="resultBanner">
+                  <div class="res-icon" id="resIcon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
+                  </div>
+                  <div class="res-text">
+                    <strong class="res-status" id="resStatus">READY</strong>
+                    <span class="res-desc" id="resDesc">Enter an input string and click Run or Step to simulate.</span>
+                  </div>
+                </div>
+
+                <!-- Automaton Properties Quick View -->
+                <div style="font-size:12px;color:var(--ink2);line-height:1.5;margin-top:auto;">
+                  <div>• <b>Initial State:</b> <span id="simInitLabel" style="font-family:var(--mono);color:var(--init-edge);font-weight:600;">-</span></div>
+                  <div>• <b>Final / Accepting States:</b> <span id="simFinalsLabel" style="font-family:var(--mono);color:var(--final-edge);font-weight:600;">-</span></div>
+                  <div>• <b>Alphabet:</b> <span id="simAlphaLabel" style="font-family:var(--mono);">-</span></div>
+                </div>
+              </div>
+
+              <!-- Right Column: State-by-State Execution Trace -->
+              <div class="sim-card">
+                <div class="sim-card-title">
+                  <span>State-by-State Execution Trace</span>
+                  <span style="font-size:11px;color:var(--ink2);font-weight:normal;">Click any row to jump to step</span>
+                </div>
+                <div class="trace-table-wrap">
+                  <table class="trace-table" id="traceTable">
+                    <thead>
+                      <tr>
+                        <th style="width:50px;">Step</th>
+                        <th>Current State</th>
+                        <th>Symbol</th>
+                        <th>Next State</th>
+                        <th>Remaining Tape</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody id="traceTableBody">
+                      <tr>
+                        <td colspan="6" style="text-align:center;color:var(--ink2);padding:24px;">No execution trace yet. Click Run or Step to start.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= VIEW 2: MINIMIZER & EQUIVALENCE ================= -->
+        <div class="dock-view" id="viewMin" role="tabpanel">
+          <div class="min-container" id="minContainer">
+            <!-- Minimization content injected dynamically -->
+          </div>
+        </div>
+
+        <!-- ================= VIEW 3: TRANSITION TABLE ================= -->
+        <div class="dock-view" id="viewTable" role="tabpanel">
+          <div class="table-container" id="tableContainer">
+            <!-- Transition table injected dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Status Bar -->
+  <footer class="statusbar">
+    <span class="msg" id="statusMsg">Ready.</span>
+    <span class="count" id="countMsg">0 states · 0 transitions</span>
+  </footer>
+</div>
+
+<script>
+/* =========================================================================
+   Automata Studio Core - Validation, Execution, Simulation, and Minimization
+   ========================================================================= */
+
+const DEAD = '∅';
+const R = 24; // State radius in px
+
+function sortSyms(a) { return [...new Set(a)].sort(); }
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// DFA data structure
+let dfa = {
+  states: [], // { id, x, y, initial, final }
+  trans: []   // { from, to, syms: [] }
+};
+
+// Alphabet state
+let definedAlpha = ['0', '1'];
+let autoAlpha = true;
+
+function getAlphabet() {
+  if (!autoAlpha && definedAlpha.length > 0) return [...definedAlpha];
+  const set = new Set();
+  dfa.trans.forEach(t => t.syms.forEach(s => set.add(s)));
+  if (set.size === 0) return definedAlpha.length ? [...definedAlpha] : ['0', '1'];
+  return [...set].sort();
+}
+
+function runModelOf(automaton) {
+  const delta = {};
+  automaton.states.forEach(s => { delta[s.id] = {}; });
+  automaton.trans.forEach(t => {
+    t.syms.forEach(a => {
+      if (delta[t.from]) delta[t.from][a] = t.to;
+    });
+  });
+  const init = automaton.states.find(s => s.initial);
+  return {
+    init: init ? init.id : null,
+    finals: new Set(automaton.states.filter(s => s.final).map(s => s.id)),
+    delta
+  };
+}
+
+function validate(automaton) {
+  const errors = [];
+  if (!automaton.states.length) {
+    errors.push('Canvas has no states. Create at least one state.');
+    return errors;
+  }
+  const inits = automaton.states.filter(s => s.initial);
+  if (inits.length === 0) errors.push('No initial state selected. Mark one state as initial.');
+  else if (inits.length > 1) errors.push('Multiple initial states marked. Exactly one state can be initial.');
+
+  const seen = {};
+  for (const t of automaton.trans) {
+    for (const a of t.syms) {
+      const k = t.from + '\u0000' + a;
+      if (seen[k] !== undefined && seen[k] !== t.to) {
+        errors.push(`Non-deterministic transition: state "${t.from}" has multiple moves on symbol "${a}".`);
+      }
+      seen[k] = t.to;
+    }
+  }
+  return errors;
+}
+
+/* =========================================================================
+   Interactive Simulation Engine
+   ========================================================================= */
+
+function simulateDFA(model, str, alpha) {
+  const chars = Array.from(str);
+  const trace = [];
+  
+  if (!model.init) {
+    return {
+      accepted: false,
+      status: 'NO_INIT',
+      reason: 'No initial state defined.',
+      trace: []
+    };
+  }
+
+  let cur = model.init;
+  let stuck = false;
+  let stuckInfo = null;
+  let invalidSym = null;
+
+  // Step 0: Initial configuration
+  trace.push({
+    step: 0,
+    curState: cur,
+    symbol: chars[0] || 'ε',
+    nextState: cur,
+    remaining: str,
+    consumed: '',
+    pos: 0,
+    action: `Started at initial state ${cur}`,
+    status: 'START'
+  });
+
+  for (let i = 0; i < chars.length; i++) {
+    const sym = chars[i];
+    
+    // Check if symbol is in alphabet
+    if (alpha && alpha.length && !alpha.includes(sym)) {
+      invalidSym = sym;
+    }
+
+    const nxt = model.delta[cur] ? model.delta[cur][sym] : undefined;
+    const consumed = chars.slice(0, i + 1).join('');
+    const remaining = chars.slice(i + 1).join('') || 'ε';
+
+    if (nxt === undefined) {
+      stuck = true;
+      stuckInfo = { state: cur, sym, pos: i };
+      trace.push({
+        step: i + 1,
+        curState: cur,
+        symbol: sym,
+        nextState: null,
+        remaining,
+        consumed,
+        pos: i + 1,
+        action: `No transition from ${cur} on "${sym}" (Halted / Stuck)`,
+        status: 'STUCK'
+      });
+      break;
+    }
+
+    cur = nxt;
+    trace.push({
+      step: i + 1,
+      curState: trace[trace.length - 1].nextState || cur,
+      symbol: sym,
+      nextState: cur,
+      remaining,
+      consumed,
+      pos: i + 1,
+      action: `Read "${sym}": ${trace[trace.length - 1].nextState || cur} → ${cur}`,
+      status: (i === chars.length - 1) ? (model.finals.has(cur) ? 'ACCEPTED' : 'REJECTED') : 'RUNNING'
+    });
+  }
+
+  const isFinal = !stuck && model.finals.has(cur);
+  let reason = '';
+  let status = '';
+
+  if (stuck) {
+    status = 'REJECTED';
+    reason = `Halted / Stuck: No transition defined from state "${stuckInfo.state}" on symbol "${stuckInfo.sym}".`;
+  } else if (invalidSym) {
+    status = 'REJECTED';
+    reason = `Rejected: Symbol "${invalidSym}" is not part of the input alphabet Σ.`;
+  } else if (isFinal) {
+    status = 'ACCEPTED';
+    reason = `Accepted: String fully consumed and automaton halted in accepting state "${cur}".`;
+  } else {
+    status = 'REJECTED';
+    reason = `Rejected: String consumed, but halted in non-accepting state "${cur}".`;
+  }
+
+  return {
+    accepted: isFinal,
+    finalState: cur,
+    status,
+    reason,
+    trace,
+    stuck,
+    stuckInfo
+  };
+}
+
+/* =========================================================================
+   Minimization Core
+   ========================================================================= */
+
+function walkStr(delta, s, str) {
+  let cur = s;
+  for (const ch of Array.from(str)) {
+    if (cur === undefined) return undefined;
+    cur = delta[cur] ? delta[cur][ch] : undefined;
+  }
+  return cur;
+}
+
+function sameLanguage(A, B, alpha) {
+  const step = (M, s, a) => (s === '#' ? '#' : (M.delta[s] && M.delta[s][a] !== undefined ? M.delta[s][a] : '#'));
+  const acc = (M, s) => s !== '#' && M.finals.has(s);
+  const seen = new Set([A.init + '|' + B.init]);
+  const q = [[A.init, B.init]];
+  for (let i = 0; i < q.length; i++) {
+    const [x, y] = q[i];
+    if (acc(A, x) !== acc(B, y)) return false;
+    for (const a of alpha) {
+      const nx = step(A, x, a), ny = step(B, y, a);
+      const k = nx + '|' + ny;
+      if (!seen.has(k)) { seen.add(k); q.push([nx, ny]); }
+    }
+  }
+  return true;
+}
+
+function minimize(automaton) {
+  const errors = validate(automaton);
+  const res = { errors };
+  if (errors.length) return res;
+
+  const m = runModelOf(automaton);
+  const alpha = getAlphabet();
+  const ids = automaton.states.map(s => s.id);
+
+  // 1. BFS reachability from initial state
+  const bfs = [m.init];
+  const seenSet = new Set(bfs);
+  for (let i = 0; i < bfs.length; i++) {
+    for (const a of alpha) {
+      const t = m.delta[bfs[i]][a];
+      if (t !== undefined && !seenSet.has(t)) {
+        seenSet.add(t);
+        bfs.push(t);
+      }
+    }
+  }
+  const order = ids.filter(i => seenSet.has(i));
+  const unreachable = ids.filter(i => !seenSet.has(i));
+
+  // 2. Complete with dead state if incomplete
+  const states = order.slice();
+  const delta = {};
+  order.forEach(s => { delta[s] = Object.assign({}, m.delta[s]); });
+  const finals = new Set([...m.finals].filter(s => seenSet.has(s)));
+  const incomplete = order.some(s => alpha.some(a => m.delta[s][a] === undefined));
+  if (incomplete) {
+    states.push(DEAD);
+    delta[DEAD] = {};
+    alpha.forEach(a => { delta[DEAD][a] = DEAD; });
+    order.forEach(s => alpha.forEach(a => { if (delta[s][a] === undefined) delta[s][a] = DEAD; }));
+  }
+
+  // 3. Table-filling algorithm
+  const n = states.length;
+  const idx = {};
+  states.forEach((s, i) => { idx[s] = i; });
+  const key = (i, j) => (i > j ? i + ',' + j : j + ',' + i);
+  const marks = new Map();
+  const pairs = [];
+  for (let i = 1; i < n; i++) for (let j = 0; j < i; j++) pairs.push([i, j]);
+  for (const [i, j] of pairs) {
+    if (finals.has(states[i]) !== finals.has(states[j])) {
+      marks.set(key(i, j), { i, j, round: 0, sym: null, witness: '' });
+    }
+  }
+  let round = 0;
+  for (;;) {
+    round++;
+    const add = [];
+    for (const [i, j] of pairs) {
+      if (marks.has(key(i, j))) continue;
+      for (const a of alpha) {
+        const p = idx[delta[states[i]][a]], q = idx[delta[states[j]][a]];
+        if (p === q) continue;
+        const mk = marks.get(key(p, q));
+        if (mk && mk.round < round) {
+          add.push({ i, j, round, sym: a, next: [Math.max(p, q), Math.min(p, q)], witness: a + mk.witness });
+          break;
+        }
+      }
+    }
+    if (!add.length) break;
+    add.forEach(x => marks.set(key(x.i, x.j), x));
+  }
+  const maxRound = round - 1;
+  const roundCounts = [];
+  for (let r = 0; r <= maxRound; r++) roundCounts.push([...marks.values()].filter(x => x.round === r).length);
+
+  // 4. Equivalence classes
+  const cls = new Array(n).fill(null);
+  let nc = 0;
+  for (let i = 0; i < n; i++) {
+    if (cls[i] !== null) continue;
+    cls[i] = nc;
+    for (let j = i + 1; j < n; j++) if (cls[j] === null && !marks.has(key(j, i))) cls[j] = nc;
+    nc++;
+  }
+  const bfs2 = [m.init];
+  const seen2 = new Set(bfs2);
+  for (let i = 0; i < bfs2.length; i++) for (const a of alpha) {
+    const t = delta[bfs2[i]][a];
+    if (!seen2.has(t)) { seen2.add(t); bfs2.push(t); }
+  }
+  const classOrder = [];
+  bfs2.forEach(s => { if (!classOrder.includes(cls[idx[s]])) classOrder.push(cls[idx[s]]); });
+  const classes = classOrder.map(c => states.filter((s, i) => cls[i] === c));
+
+  // 5. Partition refinement (Moore's algorithm)
+  let blocks = [states.filter(s => finals.has(s)), states.filter(s => !finals.has(s))].filter(b => b.length);
+  const rounds = [{ blocks: blocks.map(b => b.slice()), stable: false, sigs: null, prev: null }];
+  for (;;) {
+    const bi = {};
+    blocks.forEach((b, k) => b.forEach(s => { bi[s] = k; }));
+    const sigs = {};
+    const next = [];
+    let changed = false;
+    blocks.forEach(b => {
+      const groups = new Map();
+      b.forEach(s => {
+        const sig = alpha.map(a => bi[delta[s][a]]);
+        sigs[s] = sig;
+        const k = sig.join('|');
+        if (!groups.has(k)) groups.set(k, []);
+        groups.get(k).push(s);
+      });
+      if (groups.size > 1) changed = true;
+      groups.forEach(g => next.push(g));
+    });
+    rounds.push({ prev: blocks.map(b => b.slice()), sigs, blocks: next.map(b => b.slice()), stable: !changed });
+    if (!changed) break;
+    blocks = next;
+  }
+  const partitionKey = bl => bl.map(b => b.slice().sort().join(',')).sort().join(';');
+  const agree = partitionKey(blocks) === partitionKey(classes);
+
+  // 6. Minimal DFA
+  const minStates = classes.map((members, k) => ({
+    id: 'Q' + k,
+    members: members.filter(s => s !== DEAD || members.length === 1),
+    initial: members.includes(m.init),
+    final: finals.has(members[0]),
+    implicitDead: members.length === 1 && members[0] === DEAD
+  }));
+  const clsId = {};
+  classes.forEach((mem, k) => mem.forEach(s => { clsId[s] = 'Q' + k; }));
+  const edgeMap = new Map();
+  classes.forEach((mem, k) => {
+    alpha.forEach(a => {
+      const to = clsId[delta[mem[0]][a]];
+      const kk = 'Q' + k + '>' + to;
+      if (!edgeMap.has(kk)) edgeMap.set(kk, { from: 'Q' + k, to, syms: [] });
+      edgeMap.get(kk).syms.push(a);
+    });
+  });
+  const minTrans = [...edgeMap.values()];
+  const minDfa = { states: minStates.map(s => ({ id: s.id, initial: s.initial, final: s.final })), trans: minTrans };
+  const minRun = runModelOf(minDfa);
+  const origRun = { init: m.init, finals, delta };
+
+  Object.assign(res, {
+    alpha, bfs, order, unreachable, incomplete, states, delta, finals: [...finals],
+    table: { states, marks: [...marks.values()], maxRound, roundCounts },
+    classes, partition: { rounds }, agree,
+    min: { states: minStates, trans: minTrans, run: minRun },
+    verified: sameLanguage(origRun, minRun, alpha)
+  });
+  return res;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = { minimize, validate, runModelOf, simulateDFA, walkStr, sameLanguage, sortSyms, DEAD };
+}
+
+/* =========================================================================
+   UI Application Controller
+   ========================================================================= */
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+// State variables
+let tool = 'select'; // 'select' | 'move' | 'state' | 'trans' | 'del'
+let sel = null;       // { type: 'state', id } or { type: 'edge', from, to } or { type: 'machine' }
+let drag = null;
+let link = null;
+const hist = { undo: [], redo: [] };
+let recTimer = null;
+let minResult = null;
+let activeDockTab = 'sim';
+
+// Theme state: 'dark' | 'light' | 'high-contrast'
+let currentTheme = 'dark';
+
+// Simulator runtime state
+const simState = {
+  result: null,
+  curStep: 0,
+  isPlaying: false,
+  timer: null,
+  speed: 600
+};
+
+// Canvas View coordinates
+const canvasView = {
+  svg: $('#canvasSvg'),
+  g: $('#canvasG'),
+  z: 1,
+  ox: 0,
+  oy: 0
+};
+
+/* ---------- Examples ---------- */
+const EXAMPLES = {
+  seven: {
+    name: 'Standard DFA: 7 States with Unreachable State',
+    sample: '0101',
+    states: [
+      { id: 'q0', x: 130, y: 220, initial: true, final: false },
+      { id: 'q1', x: 130, y: 90, initial: false, final: false },
+      { id: 'q2', x: 330, y: 280, initial: false, final: true },
+      { id: 'q3', x: 330, y: 130, initial: false, final: true },
+      { id: 'q4', x: 550, y: 200, initial: false, final: true },
+      { id: 'q5', x: 770, y: 200, initial: false, final: false },
+      { id: 'q6', x: 550, y: 350, initial: false, final: false }
+    ],
+    trans: [
+      { from: 'q0', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'q0', syms: ['0'] },
+      { from: 'q0', to: 'q2', syms: ['1'] },
+      { from: 'q1', to: 'q3', syms: ['1'] },
+      { from: 'q2', to: 'q4', syms: ['0'] },
+      { from: 'q2', to: 'q5', syms: ['1'] },
+      { from: 'q3', to: 'q4', syms: ['0'] },
+      { from: 'q3', to: 'q5', syms: ['1'] },
+      { from: 'q4', to: 'q4', syms: ['0'] },
+      { from: 'q4', to: 'q5', syms: ['1'] },
+      { from: 'q5', to: 'q5', syms: ['0', '1'] },
+      { from: 'q6', to: 'q6', syms: ['0'] },
+      { from: 'q6', to: 'q5', syms: ['1'] }
+    ]
+  },
+  ends0: {
+    name: 'Binary Strings Ending in 0',
+    sample: '1000100',
+    states: [
+      { id: 'q0', x: 240, y: 200, initial: true, final: false },
+      { id: 'q1', x: 520, y: 200, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q1', syms: ['0'] },
+      { from: 'q1', to: 'q0', syms: ['1'] },
+      { from: 'q0', to: 'q0', syms: ['1'] },
+      { from: 'q1', to: 'q1', syms: ['0'] }
+    ]
+  },
+  partial: {
+    name: 'Implicit Dead State (Missing Moves)',
+    sample: 'abbb',
+    states: [
+      { id: 'q0', x: 140, y: 200, initial: true, final: false },
+      { id: 'q1', x: 360, y: 120, initial: false, final: true },
+      { id: 'q2', x: 360, y: 280, initial: false, final: true },
+      { id: 'q3', x: 620, y: 200, initial: false, final: true }
+    ],
+    trans: [
+      { from: 'q0', to: 'q1', syms: ['a'] },
+      { from: 'q1', to: 'q2', syms: ['b'] },
+      { from: 'q2', to: 'q1', syms: ['b'] },
+      { from: 'q3', to: 'q3', syms: ['a'] }
+    ]
+  }
+};
+
+function loadExample(key) {
+  const ex = EXAMPLES[key];
+  if (!ex) return;
+  dfa = {
+    states: ex.states.map(s => Object.assign({}, s)),
+    trans: ex.trans.map(t => ({ from: t.from, to: t.to, syms: sortSyms(t.syms) }))
+  };
+  hist.undo.length = 0;
+  hist.redo.length = 0;
+  sel = null;
+  $('#simInputStr').value = ex.sample;
+  $('#tbQuickInput').value = ex.sample;
+  syncAlphabetFromTransitions();
+  afterChange(true);
+  fitView();
+  showToast('Loaded: ' + ex.name, 'ok');
+}
+
+function clearAutomaton() {
+  mutate(() => {
+    dfa = { states: [], trans: [] };
+    sel = null;
+  });
+  setTool('state');
+  showToast('Canvas cleared. Click to place your first state.');
+}
+
+/* ---------- Canvas View (Pan / Zoom) ---------- */
+function applyView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  canvasView.svg.setAttribute('viewBox', `${canvasView.ox} ${canvasView.oy} ${w / canvasView.z} ${h / canvasView.z}`);
+  const pct = Math.round(canvasView.z * 100);
+  $('#zoomRange').value = pct;
+  $('#zoomOut').textContent = pct + '%';
+}
+
+function setZoom(z, cx, cy) {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  if (cx === undefined) cx = canvasView.ox + w / (2 * canvasView.z);
+  if (cy === undefined) cy = canvasView.oy + h / (2 * canvasView.z);
+  
+  canvasView.z = Math.max(0.3, Math.min(2.5, z));
+  canvasView.ox = cx - w / (2 * canvasView.z);
+  canvasView.oy = cy - h / (2 * canvasView.z);
+  applyView();
+}
+
+function fitView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  if (!dfa.states.length) {
+    canvasView.z = 1; canvasView.ox = 0; canvasView.oy = 0;
+    applyView(); return;
+  }
+  const xs = dfa.states.map(s => s.x);
+  const ys = dfa.states.map(s => s.y);
+  const minx = Math.min(...xs) - R - 60;
+  const maxx = Math.max(...xs) + R + 60;
+  const miny = Math.min(...ys) - R - 60;
+  const maxy = Math.max(...ys) + R + 60;
+  const gw = maxx - minx || 200;
+  const gh = maxy - miny || 200;
+  canvasView.z = Math.max(0.35, Math.min(1.4, w / gw, h / gh));
+  canvasView.ox = (minx + maxx) / 2 - w / (2 * canvasView.z);
+  canvasView.oy = (miny + maxy) / 2 - h / (2 * canvasView.z);
+  applyView();
+}
+
+function centerView() {
+  const w = canvasView.svg.clientWidth || 800;
+  const h = canvasView.svg.clientHeight || 500;
+  canvasView.ox = -w / (2 * canvasView.z);
+  canvasView.oy = -h / (2 * canvasView.z);
+  applyView();
+}
+
+function toModel(e) {
+  const pt = canvasView.svg.createSVGPoint();
+  pt.x = e.clientX;
+  pt.y = e.clientY;
+  const m = canvasView.svg.getScreenCTM();
+  if (!m) return { x: 0, y: 0 };
+  const p = pt.matrixTransform(m.inverse());
+  return { x: p.x, y: p.y };
+}
+
+window.addEventListener('resize', applyView);
+if (window.ResizeObserver) {
+  new ResizeObserver(applyView).observe(canvasView.svg);
+}
+
+/* ---------- Drawing Engine ---------- */
+function getMachineBounds() {
+  if (!dfa.states.length) return null;
+  const xs = dfa.states.map(s => s.x);
+  const ys = dfa.states.map(s => s.y);
+  const pad = R + 26;
+  return {
+    minX: Math.min(...xs) - pad - 16,
+    minY: Math.min(...ys) - pad,
+    maxX: Math.max(...xs) + pad,
+    maxY: Math.max(...ys) + pad,
+    width: Math.max(...xs) - Math.min(...xs) + pad * 2 + 16,
+    height: Math.max(...ys) - Math.min(...ys) + pad * 2
+  };
+}
+
+function redrawCanvas() {
+  const pos = new Map(dfa.states.map(s => [s.id, s]));
+  const pairs = new Set(dfa.trans.map(t => t.from + '\u0001' + t.to));
+  const activeStep = (simState.result && simState.result.trace && simState.result.trace[simState.curStep]) || null;
+  const activeStateId = activeStep ? activeStep.curState : null;
+  const activeNextId = activeStep ? activeStep.nextState : null;
+  const activeSymbol = activeStep ? activeStep.symbol : null;
+
+  let out = `
+    <defs>
+      <marker id="ae" class="mk" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="11" markerHeight="9" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+      <marker id="aes" class="mk mk-sel" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="11" markerHeight="9" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+      <marker id="aesim" class="mk mk-sim" viewBox="0 0 10 8" refX="10" refY="4" markerWidth="12" markerHeight="10" orient="auto"><path d="M0 0L10 4L0 8z"/></marker>
+    </defs>
+  `;
+
+  // Draw Machine Bounding Box if Move tool is active or Machine is selected
+  const bounds = getMachineBounds();
+  if (bounds && (tool === 'move' || (sel && sel.type === 'machine'))) {
+    out += `
+      <g class="machine-group">
+        <rect class="machine-box" x="${bounds.minX}" y="${bounds.minY}" width="${bounds.width}" height="${bounds.height}"/>
+        <g class="machine-tag" transform="translate(${(bounds.minX + bounds.maxX) / 2} ${bounds.minY - 14})">
+          <rect x="-105" y="-10" width="210" height="20"/>
+          <text x="0" y="0">Automaton Machine (Drag to Move)</text>
+        </g>
+      </g>
+    `;
+  }
+
+  // Draw Transitions (Edges)
+  dfa.trans.forEach((t, k) => {
+    const a = pos.get(t.from);
+    const b = pos.get(t.to);
+    if (!a || !b) return;
+
+    const lab = t.syms.join(',');
+    const isSel = sel && sel.type === 'edge' && sel.from === t.from && sel.to === t.to;
+    const isSimActive = activeStep && activeStep.step > 0 && 
+                        activeStep.curState === t.from && activeNextId === t.to &&
+                        t.syms.includes(activeSymbol);
+
+    let d, lx, ly;
+
+    if (t.from === t.to) {
+      // Self loop
+      let mx = 0, my = 0, c = 0;
+      dfa.trans.forEach(u => {
+        if (u.from === t.from && u.to !== t.from) {
+          const p = pos.get(u.to);
+          if (p) { mx += p.x - a.x; my += p.y - a.y; c++; }
+        } else if (u.to === t.from && u.from !== t.from) {
+          const p = pos.get(u.from);
+          if (p) { mx += p.x - a.x; my += p.y - a.y; c++; }
+        }
+      });
+      const th = (c && Math.hypot(mx, my) > 1) ? Math.atan2(-my, -mx) : -Math.PI / 2;
+      const P = (ang, r) => [a.x + r * Math.cos(ang), a.y + r * Math.sin(ang)];
+      const p1 = P(th - 0.5, R), p2 = P(th + 0.5, R + 1);
+      const c1 = P(th - 0.38, R + 46), c2 = P(th + 0.38, R + 46);
+      const lp = P(th, R + 44);
+
+      d = `M ${p1[0]} ${p1[1]} C ${c1[0]} ${c1[1]} ${c2[0]} ${c2[1]} ${p2[0]} ${p2[1]}`;
+      lx = lp[0]; ly = lp[1];
+    } else {
+      // Directed Edge between two distinct states
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const px = -dy / len, py = dx / len;
+      const rev = pairs.has(t.to + '\u0001' + t.from);
+      const bend = rev ? 26 : (t.bend || 0);
+
+      const cx = (a.x + b.x) / 2 + px * bend * 2;
+      const cy = (a.y + b.y) / 2 + py * bend * 2;
+
+      let ux = cx - a.x, uy = cy - a.y, ul = Math.hypot(ux, uy) || 1;
+      ux /= ul; uy /= ul;
+      let vx = cx - b.x, vy = cy - b.y, vl = Math.hypot(vx, vy) || 1;
+      vx /= vl; vy /= vl;
+
+      const sx = a.x + ux * R, sy = a.y + uy * R;
+      const ex = b.x + vx * (R + 1), ey = b.y + vy * (R + 1);
+
+      d = `M ${sx} ${sy} Q ${cx} ${cy} ${ex} ${ey}`;
+      const mx = 0.25 * sx + 0.5 * cx + 0.25 * ex;
+      const my = 0.25 * sy + 0.5 * cy + 0.25 * ey;
+
+      let nx = px, ny = py;
+      if (!bend) {
+        if (ny > 0 || (ny === 0 && nx < 0)) { nx = -nx; ny = -ny; }
+      } else if (bend < 0) {
+        nx = -nx; ny = -ny;
+      }
+      lx = mx + nx * 14;
+      ly = my + ny * 14;
+    }
+
+    const markerId = isSimActive ? 'aesim' : (isSel ? 'aes' : 'ae');
+    out += `
+      <g class="edge ${isSel ? 'sel' : ''} ${isSimActive ? 'sim-active' : ''}" data-ed="${k}">
+        <path class="hit" d="${d}"/>
+        <path class="ln" d="${d}" marker-end="url(#${markerId})"/>
+        <text class="lb" x="${lx}" y="${ly}">${esc(lab)}</text>
+      </g>
+    `;
+  });
+
+  // Draw in-progress rubber band link
+  if (link) {
+    out += `<line class="rubber" x1="${link.x1}" y1="${link.y1}" x2="${link.x2}" y2="${link.y2}"/>`;
+  }
+
+  // Draw States
+  dfa.states.forEach(s => {
+    const isSel = sel && sel.type === 'state' && sel.id === s.id;
+    const isSimActive = (activeStateId === s.id);
+
+    // Initial arrow: Solid green line pointing directly to circle perimeter with arrow head
+    const initialArrow = s.initial ? `
+      <g class="init-arrow-group" pointer-events="none">
+        <line x1="${-R - 28}" y1="0" x2="${-R - 2}" y2="0"/>
+        <polygon points="${-R - 14},-7 ${-R - 2},0 ${-R - 14},7"/>
+      </g>
+    ` : '';
+
+    out += `
+      <g class="st ${s.initial ? 'init' : ''} ${s.final ? 'fin' : ''} ${isSel ? 'sel' : ''} ${isSimActive ? 'sim-active' : ''}" data-st="${esc(s.id)}" transform="translate(${s.x} ${s.y})">
+        ${isSimActive ? '<circle class="pulse-ring" r="24"/>' : ''}
+        ${initialArrow}
+        <circle class="body" r="${R}"/>
+        ${s.final ? '<circle class="ring" r="' + (R - 5) + '"/>' : ''}
+        <text>${esc(s.label || s.id)}</text>
+        ${s.sub ? '<text class="sub" y="' + (R + 17) + '">' + esc(s.sub) + '</text>' : ''}
+      </g>
+    `;
+  });
+
+  canvasView.g.innerHTML = out;
+}
+
+/* ---------- Status & Inspector Updates ---------- */
+function getToolHint() {
+  switch (tool) {
+    case 'select': return 'Select: Click to select/edit states or arrows, drag individual states, drag empty space to pan.';
+    case 'move': return 'Move Tool: Click and drag anywhere to move the entire generated automaton machine around.';
+    case 'state': return 'State Tool: Click anywhere on the canvas to add a new state.';
+    case 'trans': return 'Transition Tool: Click & drag from one state to another (or onto itself) to add a transition.';
+    case 'del': return 'Delete Tool: Click a state or transition arrow to remove it.';
+    default: return '';
+  }
+}
+
+function showToast(msg, kind) {
+  const el = $('#statusMsg');
+  el.textContent = msg;
+  el.className = 'msg' + (kind ? ' ' + kind : '');
+}
+
+function updateCountsAndSummary() {
+  const alpha = getAlphabet();
+  $('#countMsg').textContent = `${dfa.states.length} states · ${dfa.trans.length} transitions · Σ = {${alpha.join(', ')}}`;
+  $('#simInitLabel').textContent = (dfa.states.find(s => s.initial) || {}).id || 'None';
+  $('#simFinalsLabel').textContent = dfa.states.filter(s => s.final).map(s => s.id).join(', ') || 'None';
+  $('#simAlphaLabel').textContent = `{${alpha.join(', ')}}`;
+  if (autoAlpha) {
+    $('#alphaInput').value = alpha.join(', ');
+  }
+}
+
+function updateUndoRedo() {
+  $('#btnUndo').disabled = !hist.undo.length;
+  $('#btnRedo').disabled = !hist.redo.length;
+}
+
+function mutate(fn) {
+  hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  if (hist.undo.length > 80) hist.undo.shift();
+  hist.redo.length = 0;
+  fn();
+  afterChange();
+}
+
+function undo() {
+  if (!hist.undo.length) return;
+  hist.redo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  const state = JSON.parse(hist.undo.pop());
+  dfa = state.dfa;
+  if (state.definedAlpha) definedAlpha = state.definedAlpha;
+  if (state.autoAlpha !== undefined) autoAlpha = state.autoAlpha;
+  fixSel();
+  afterChange(true);
+}
+
+function redo() {
+  if (!hist.redo.length) return;
+  hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+  const state = JSON.parse(hist.redo.pop());
+  dfa = state.dfa;
+  if (state.definedAlpha) definedAlpha = state.definedAlpha;
+  if (state.autoAlpha !== undefined) autoAlpha = state.autoAlpha;
+  fixSel();
+  afterChange(true);
+}
+
+function fixSel() {
+  if (!sel) return;
+  if (sel.type === 'state' && !dfa.states.some(s => s.id === sel.id)) sel = null;
+  if (sel && sel.type === 'edge' && !dfa.trans.some(t => t.from === sel.from && t.to === sel.to)) sel = null;
+}
+
+function afterChange(now) {
+  redrawCanvas();
+  renderInspector();
+  updateCountsAndSummary();
+  updateUndoRedo();
+  if (now) recomputeAll();
+  else {
+    clearTimeout(recTimer);
+    recTimer = setTimeout(recomputeAll, 120);
+  }
+}
+
+function recomputeAll() {
+  minResult = minimize(dfa);
+  renderMinimizer();
+  renderTransitionTable();
+  runSimulation($('#simInputStr').value.trim(), true);
+}
+
+function syncAlphabetFromTransitions() {
+  if (autoAlpha) {
+    const set = new Set();
+    dfa.trans.forEach(t => t.syms.forEach(s => set.add(s)));
+    if (set.size > 0) definedAlpha = [...set].sort();
+    $('#alphaInput').value = definedAlpha.join(', ');
+  }
+}
+
+/* ---------- State & Edge Operations ---------- */
+const getState = id => dfa.states.find(s => s.id === id);
+
+function nextStateName() {
+  let k = 0;
+  while (getState('q' + k)) k++;
+  return 'q' + k;
+}
+
+function addState(p) {
+  mutate(() => {
+    const id = nextStateName();
+    // Only the very first state added to an empty automaton is initial by default
+    const isFirst = dfa.states.length === 0;
+    dfa.states.push({
+      id,
+      x: Math.round(p.x),
+      y: Math.round(p.y),
+      initial: isFirst,
+      final: false
+    });
+    sel = { type: 'state', id };
+  });
+  showToast(`Created state "${sel.id}"` + (getState(sel.id).initial ? ' (Initial)' : ''), 'ok');
+}
+
+function deleteState(id) {
+  mutate(() => {
+    dfa.states = dfa.states.filter(s => s.id !== id);
+    dfa.trans = dfa.trans.filter(t => t.from !== id && t.to !== id);
+    if (sel && sel.type === 'state' && sel.id === id) sel = null;
+    syncAlphabetFromTransitions();
+  });
+  showToast(`Deleted state "${id}"`, 'ok');
+}
+
+function deleteEdge(idx) {
+  mutate(() => {
+    dfa.trans.splice(idx, 1);
+    sel = null;
+    syncAlphabetFromTransitions();
+  });
+  showToast('Deleted transition', 'ok');
+}
+
+function parseSyms(str) {
+  const raw = str.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  const chars = [];
+  raw.forEach(token => {
+    for (const c of Array.from(token)) chars.push(c);
+  });
+  const eps = chars.some(c => c === 'ε' || c === 'λ');
+  return { syms: sortSyms(chars.filter(c => c !== 'ε' && c !== 'λ')), eps };
+}
+
+function applyEdge(from, to, text, mode) {
+  const { syms, eps } = parseSyms(text);
+  if (eps) {
+    showToast('A DFA reads one symbol per move: ε and λ are not allowed.', 'err');
+    return false;
+  }
+  const ex = dfa.trans.find(t => t.from === from && t.to === to);
+  const fin = mode === 'add' ? sortSyms([...(ex ? ex.syms : []), ...syms]) : syms;
+
+  if (!fin.length && mode === 'add') {
+    showToast('Enter at least one symbol (e.g. 0 or 0, 1).', 'err');
+    return false;
+  }
+
+  // Check determinism
+  for (const a of fin) {
+    const conflict = dfa.trans.find(t => t.from === from && t.to !== to && t.syms.includes(a));
+    if (conflict) {
+      showToast(`Deterministic conflict: "${from}" already transitions to "${conflict.to}" on "${a}".`, 'err');
+      return false;
+    }
+  }
+
+  mutate(() => {
+    if (ex) {
+      if (fin.length) ex.syms = fin;
+      else { dfa.trans.splice(dfa.trans.indexOf(ex), 1); sel = null; }
+    } else if (fin.length) {
+      dfa.trans.push({ from, to, syms: fin });
+    }
+    if (fin.length) sel = { type: 'edge', from, to };
+    syncAlphabetFromTransitions();
+  });
+  return true;
+}
+
+/* ---------- Floating Label Editor ---------- */
+let lblCtx = null;
+function openLabel(from, to) {
+  const a = getState(from), b = getState(to);
+  if (!a || !b) return;
+  const m = canvasView.svg.getScreenCTM();
+  if (!m) return;
+
+  let x, y;
+  if (from === to) {
+    x = a.x; y = a.y - R - 50;
+  } else {
+    x = (a.x + b.x) / 2; y = (a.y + b.y) / 2 - 18;
+  }
+
+  const pt = canvasView.svg.createSVGPoint();
+  pt.x = x; pt.y = y;
+  const c = pt.matrixTransform(m);
+  const wr = $('#canvasWrap').getBoundingClientRect();
+  const f = $('#lbl');
+  f.hidden = false;
+  const fw = f.offsetWidth || 180;
+  f.style.left = Math.max(8, Math.min(wr.width - fw - 8, c.x - wr.left - fw / 2)) + 'px';
+  f.style.top = Math.max(8, Math.min(wr.height - 56, c.y - wr.top - 20)) + 'px';
+
+  lblCtx = { from, to };
+  const curEdge = dfa.trans.find(t => t.from === from && t.to === to);
+  $('#lblIn').value = curEdge ? curEdge.syms.join(', ') : '';
+  $('#lblIn').focus();
+  showToast(`Enter symbols for ${from} → ${to} (e.g. 0 or 0, 1) and press Enter.`);
+}
+
+function closeLabel() {
+  $('#lbl').hidden = true;
+  lblCtx = null;
+}
+
+$('#lbl').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!lblCtx) return;
+  const { from, to } = lblCtx;
+  if (applyEdge(from, to, $('#lblIn').value, 'add')) {
+    closeLabel();
+    showToast(`Added transition: ${from} → ${to}`, 'ok');
+  } else {
+    $('#lblIn').focus();
+  }
+});
+
+$('#lblIn').addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLabel();
+    showToast(getToolHint());
+  }
+});
+
+/* ---------- Inspector Rendering ---------- */
+function renderInspector() {
+  const box = $('#inspector');
+  if (tool === 'move') {
+    box.innerHTML = `
+      <strong>Move Machine Tool:</strong>
+      <span>Click and drag anywhere on the canvas to reposition the entire automaton machine.</span>
+      <button class="btn sm" id="btnCenterMachine">Center Machine</button>
+    `;
+    $('#btnCenterMachine').onclick = () => {
+      const b = getMachineBounds();
+      if (!b) return;
+      const curCx = (b.minX + b.maxX) / 2;
+      const curCy = (b.minY + b.maxY) / 2;
+      mutate(() => {
+        dfa.states.forEach(s => {
+          s.x -= Math.round(curCx - 400);
+          s.y -= Math.round(curCy - 250);
+        });
+      });
+      fitView();
+      showToast('Centered automaton machine on canvas.', 'ok');
+    };
+    return;
+  }
+
+  if (sel && sel.type === 'state' && getState(sel.id)) {
+    const s = getState(sel.id);
+    box.innerHTML = `
+      <strong>State:</strong>
+      <label>Name <input type="text" id="inStateName" value="${esc(s.id)}" maxlength="8" autocomplete="off" spellcheck="false"></label>
+      <button class="pill ${s.initial ? 'active-init' : ''}" id="btnToggleInit" aria-pressed="${s.initial}">
+        ${s.initial ? 'Initial State (Active)' : 'Set as Initial'}
+      </button>
+      <button class="pill ${s.final ? 'active-fin' : ''}" id="btnToggleFin" aria-pressed="${s.final}">
+        ${s.final ? 'Final / Accepting (Active)' : 'Mark Final / Accepting'}
+      </button>
+      <button class="pill danger" id="btnDelSelectedState">Delete State</button>
+    `;
+
+    // Strictly ensure ONLY ONE state can be selected as initial
+    $('#btnToggleInit').onclick = () => {
+      mutate(() => {
+        const was = s.initial;
+        dfa.states.forEach(x => { x.initial = false; });
+        s.initial = !was;
+      });
+      showToast(`State "${s.id}" ${s.initial ? 'set as Initial state' : 'unmarked Initial'}.`, 'ok');
+    };
+
+    $('#btnToggleFin').onclick = () => {
+      mutate(() => { s.final = !s.final; });
+      showToast(`State "${s.id}" ${s.final ? 'marked Final / Accepting' : 'unmarked Final'}.`, 'ok');
+    };
+
+    $('#btnDelSelectedState').onclick = () => deleteState(s.id);
+
+    $('#inStateName').onchange = e => {
+      const v = e.target.value.trim();
+      const old = s.id;
+      if (!v) { showToast('A state needs a name.', 'err'); e.target.value = old; return; }
+      if (v !== old && getState(v)) { showToast(`State name "${v}" is already taken.`, 'err'); e.target.value = old; return; }
+      if (v === old) return;
+      mutate(() => {
+        s.id = v;
+        dfa.trans.forEach(t => {
+          if (t.from === old) t.from = v;
+          if (t.to === old) t.to = v;
+        });
+        sel = { type: 'state', id: v };
+      });
+      showToast(`Renamed state "${old}" to "${v}".`, 'ok');
+    };
+  } else if (sel && sel.type === 'edge') {
+    const t = dfa.trans.find(u => u.from === sel.from && u.to === sel.to);
+    if (t) {
+      box.innerHTML = `
+        <strong>Transition:</strong>
+        <span>${esc(t.from)} → ${esc(t.to)}</span>
+        <label>Symbols <input type="text" class="syms" id="inEdgeSyms" value="${esc(t.syms.join(', '))}" autocomplete="off" spellcheck="false"></label>
+        <button class="pill danger" id="btnDelSelectedEdge">Delete Transition</button>
+      `;
+
+      $('#btnDelSelectedEdge').onclick = () => {
+        const idx = dfa.trans.findIndex(u => u.from === sel.from && u.to === sel.to);
+        if (idx >= 0) deleteEdge(idx);
+      };
+
+      $('#inEdgeSyms').onchange = e => {
+        if (!applyEdge(sel.from, sel.to, e.target.value, 'set')) {
+          const edge = dfa.trans.find(u => u.from === sel.from && u.to === sel.to);
+          if (edge) e.target.value = edge.syms.join(', ');
+        }
+      };
+    }
+  } else {
+    box.innerHTML = `<span>${esc(getToolHint())}</span>`;
+  }
+}
+
+/* ---------- Pointer Event Handling (Editing & Move Tool) ---------- */
+canvasView.svg.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  closeLabel();
+  const p = toModel(e);
+  const stEl = e.target.closest('[data-st]');
+  const edEl = e.target.closest('[data-ed]');
+  const stId = stEl ? stEl.dataset.st : null;
+
+  if (tool === 'move') {
+    if (dfa.states.length > 0) {
+      drag = {
+        kind: 'move_machine',
+        startP: p,
+        startStates: dfa.states.map(s => ({ id: s.id, x: s.x, y: s.y })),
+        moved: false
+      };
+      canvasView.svg.classList.add('dragging-move');
+      try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+      redrawCanvas();
+    } else {
+      drag = { kind: 'pan', sx: e.clientX, sy: e.clientY, ox: canvasView.ox, oy: canvasView.oy };
+      try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+    }
+    return;
+  }
+
+  if (tool === 'select') {
+    if (stId) {
+      const s = getState(stId);
+      sel = { type: 'state', id: stId };
+      drag = {
+        kind: 'state',
+        id: stId,
+        dx: p.x - s.x,
+        dy: p.y - s.y,
+        startX: s.x,
+        startY: s.y,
+        moved: false
+      };
+    } else if (edEl) {
+      const t = dfa.trans[+edEl.dataset.ed];
+      if (t) sel = { type: 'edge', from: t.from, to: t.to };
+    } else {
+      sel = null;
+      drag = { kind: 'pan', sx: e.clientX, sy: e.clientY, ox: canvasView.ox, oy: canvasView.oy };
+    }
+    try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+    redrawCanvas();
+    renderInspector();
+  } else if (tool === 'state') {
+    if (!stId && !edEl) addState(p);
+  } else if (tool === 'trans') {
+    if (stId) {
+      const s = getState(stId);
+      drag = { kind: 'link', from: stId };
+      link = { x1: s.x, y1: s.y, x2: p.x, y2: p.y };
+      try { canvasView.svg.setPointerCapture(e.pointerId); } catch (_) {}
+      redrawCanvas();
+    }
+  } else if (tool === 'del') {
+    if (stId) deleteState(stId);
+    else if (edEl) deleteEdge(+edEl.dataset.ed);
+  }
+});
+
+canvasView.svg.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const p = toModel(e);
+
+  if (drag.kind === 'move_machine') {
+    const deltaX = p.x - drag.startP.x;
+    const deltaY = p.y - drag.startP.y;
+    if (!drag.moved && (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2)) {
+      drag.moved = true;
+    }
+    drag.startStates.forEach(snap => {
+      const s = getState(snap.id);
+      if (s) {
+        s.x = Math.round(snap.x + deltaX);
+        s.y = Math.round(snap.y + deltaY);
+      }
+    });
+    redrawCanvas();
+  } else if (drag.kind === 'state') {
+    const s = getState(drag.id);
+    if (!s) return;
+    if (!drag.moved && (Math.abs(p.x - drag.dx - drag.startX) > 2 || Math.abs(p.y - drag.dy - drag.startY) > 2)) {
+      drag.moved = true;
+      hist.undo.push(JSON.stringify({ dfa, definedAlpha, autoAlpha }));
+      hist.redo.length = 0;
+      updateUndoRedo();
+    }
+    s.x = Math.round(p.x - drag.dx);
+    s.y = Math.round(p.y - drag.dy);
+    redrawCanvas();
+  } else if (drag.kind === 'pan') {
+    canvasView.ox = drag.ox - (e.clientX - drag.sx) / canvasView.z;
+    canvasView.oy = drag.oy - (e.clientY - drag.sy) / canvasView.z;
+    applyView();
+  } else if (drag.kind === 'link') {
+    link.x2 = p.x;
+    link.y2 = p.y;
+    redrawCanvas();
+  }
+});
+
+function endDrag(e) {
+  if (!drag) return;
+  const d = drag;
+  drag = null;
+  canvasView.svg.classList.remove('dragging-move');
+
+  if (d.kind === 'move_machine') {
+    if (d.moved) {
+      hist.undo.push(JSON.stringify({
+        dfa: {
+          states: d.startStates,
+          trans: dfa.trans
+        },
+        definedAlpha,
+        autoAlpha
+      }));
+      hist.redo.length = 0;
+      afterChange();
+      showToast('Automaton machine moved.', 'ok');
+    }
+  } else if (d.kind === 'state') {
+    if (d.moved) afterChange();
+  } else if (d.kind === 'link') {
+    const p = toModel(e);
+    link = null;
+    const tgt = dfa.states.find(s => Math.hypot(s.x - p.x, s.y - p.y) <= R + 10);
+    redrawCanvas();
+    if (tgt) openLabel(d.from, tgt.id);
+    else showToast('Drop arrow onto a target state to complete transition.', 'err');
+  }
+}
+
+canvasView.svg.addEventListener('pointerup', endDrag);
+canvasView.svg.addEventListener('pointercancel', () => {
+  drag = null; link = null; canvasView.svg.classList.remove('dragging-move'); redrawCanvas();
+});
+
+// Double click shortcut: Add state on canvas
+canvasView.svg.addEventListener('dblclick', e => {
+  if (tool === 'select') {
+    const stEl = e.target.closest('[data-st]');
+    if (stEl) {
+      const s = getState(stEl.dataset.st);
+      if (s) {
+        mutate(() => { s.final = !s.final; });
+        showToast(`Toggled final state "${s.id}".`, 'ok');
+      }
+    } else {
+      addState(toModel(e));
+    }
+  }
+});
+
+// Wheel zoom
+canvasView.svg.addEventListener('wheel', e => {
+  e.preventDefault();
+  const p = toModel(e);
+  const factor = e.deltaY < 0 ? 1.12 : 0.89;
+  setZoom(canvasView.z * factor, p.x, p.y);
+}, { passive: false });
+
+/* ---------- Keyboard Shortcuts ---------- */
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || document.querySelector('.overlay')) return;
+
+  if (e.key === 'v' || e.key === 'V') setTool('select');
+  else if (e.key === 'm' || e.key === 'M') setTool('move');
+  else if (e.key === 's' || e.key === 'S') setTool('state');
+  else if (e.key === 't' || e.key === 'T') setTool('trans');
+  else if (e.key === 'd' || e.key === 'D') setTool('del');
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && sel) {
+    e.preventDefault();
+    if (sel.type === 'state') deleteState(sel.id);
+    else if (sel.type === 'edge') {
+      const idx = dfa.trans.findIndex(t => t.from === sel.from && t.to === sel.to);
+      if (idx >= 0) deleteEdge(idx);
+    }
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    if (e.shiftKey) redo(); else undo();
+  } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+    e.preventDefault();
+    redo();
+  }
+});
+
+/* ---------- Toolbar Tool Selector ---------- */
+function setTool(t) {
+  tool = t;
+  closeLabel();
+  $$('.tool[data-tool]').forEach(b => {
+    b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false');
+    b.classList.toggle('active', b.dataset.tool === t);
+  });
+  canvasView.svg.dataset.tool = t;
+  showToast(getToolHint());
+  renderInspector();
+  redrawCanvas();
+}
+
+$$('.tool[data-tool]').forEach(b => {
+  b.addEventListener('click', () => setTool(b.dataset.tool));
+});
+
+$('#btnUndo').onclick = undo;
+$('#btnRedo').onclick = redo;
+$('#btnFit').onclick = fitView;
+$('#btnCenter').onclick = centerView;
+$('#zoomRange').oninput = e => setZoom(e.target.value / 100);
+
+/* ---------- Alphabet Configuration ---------- */
+$('#btnSetAlpha').onclick = () => {
+  const val = $('#alphaInput').value.trim();
+  const raw = val.split(',').map(s => s.trim()).filter(Boolean);
+  if (!raw.length) {
+    showToast('Alphabet cannot be empty.', 'err');
+    return;
+  }
+  definedAlpha = sortSyms(raw);
+  autoAlpha = false;
+  $('#chkAutoAlpha').checked = false;
+  afterChange(true);
+  showToast(`Alphabet defined as Σ = {${definedAlpha.join(', ')}}`, 'ok');
+};
+
+$('#chkAutoAlpha').onchange = e => {
+  autoAlpha = e.target.checked;
+  if (autoAlpha) {
+    syncAlphabetFromTransitions();
+    afterChange(true);
+    showToast('Alphabet auto-detection enabled.', 'ok');
+  } else {
+    showToast('Alphabet set to manual mode.', 'ok');
+  }
+};
+
+/* =========================================================================
+   Interactive Simulation Runner & Step-by-Step UI
+   ========================================================================= */
+
+function runSimulation(str, keepStep) {
+  const model = runModelOf(dfa);
+  const alpha = getAlphabet();
+  const sim = simulateDFA(model, str, alpha);
+  simState.result = sim;
+
+  if (!keepStep) {
+    simState.curStep = 0;
+  } else {
+    simState.curStep = Math.min(simState.curStep, (sim.trace ? sim.trace.length - 1 : 0));
+  }
+
+  updateSimulationUI();
+  redrawCanvas();
+  return sim;
+}
+
+function updateSimulationUI() {
+  const sim = simState.result;
+  const str = $('#simInputStr').value.trim();
+  const banner = $('#resultBanner');
+  const icon = $('#resIcon');
+  const status = $('#resStatus');
+  const desc = $('#resDesc');
+  const tapeStrip = $('#tapeStrip');
+  const traceTbody = $('#traceTableBody');
+
+  if (!sim || !sim.trace || !sim.trace.length) {
+    banner.className = 'result-banner ready';
+    icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>`;
+    status.textContent = 'READY';
+    desc.textContent = 'Enter an input string and click Run or Step.';
+    tapeStrip.innerHTML = '<div class="tape-cell empty-msg">Tape empty. Enter a string above.</div>';
+    traceTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--ink2);padding:20px;">No trace available.</td></tr>';
+    $('#simStepCount').textContent = 'Step 0 / 0';
+    $('#tapePosLabel').textContent = 'Head: 0';
+    return;
+  }
+
+  const curTrace = sim.trace[simState.curStep];
+  const isLast = (simState.curStep === sim.trace.length - 1);
+
+  $('#simStepCount').textContent = `Step ${simState.curStep} / ${sim.trace.length - 1}`;
+  $('#tapePosLabel').textContent = `Head: ${curTrace.pos} (${curTrace.pos < str.length ? `symbol "${str[curTrace.pos]}"` : 'End of Tape'})`;
+
+  // Render Tape
+  const chars = Array.from(str);
+  if (!chars.length) {
+    tapeStrip.innerHTML = '<div class="tape-cell empty-msg">Empty string (ε)</div>';
+  } else {
+    tapeStrip.innerHTML = chars.map((ch, idx) => {
+      const isHead = (idx === curTrace.pos);
+      const isConsumed = (idx < curTrace.pos);
+      return `<div class="tape-cell ${isHead ? 'head' : ''} ${isConsumed ? 'consumed' : ''}" title="Index ${idx}: '${ch}'">${esc(ch)}</div>`;
+    }).join('');
+  }
+
+  // Render Status Banner
+  if (isLast) {
+    if (sim.accepted) {
+      banner.className = 'result-banner accepted';
+      icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="8 12 11 15 16 9"/></svg>`;
+      status.textContent = 'ACCEPTED';
+      desc.textContent = sim.reason;
+    } else {
+      banner.className = 'result-banner rejected';
+      icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>`;
+      status.textContent = 'REJECTED';
+      desc.textContent = sim.reason;
+    }
+  } else {
+    banner.className = 'result-banner running';
+    icon.innerHTML = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>`;
+    status.textContent = 'STEP ' + simState.curStep + ' OF ' + (sim.trace.length - 1);
+    desc.textContent = curTrace.action;
+  }
+
+  // Render Trace Table
+  let rowsHtml = '';
+  sim.trace.forEach((stepItem, idx) => {
+    const isCur = (idx === simState.curStep);
+    const sInit = (stepItem.curState === (dfa.states.find(s => s.initial) || {}).id);
+    const sFin = dfa.states.some(s => s.id === stepItem.curState && s.final);
+
+    rowsHtml += `
+      <tr class="${isCur ? 'active-step' : ''}" data-step-idx="${idx}">
+        <td><b>${stepItem.step}</b></td>
+        <td><span class="st-badge ${sInit ? 'init' : ''} ${sFin ? 'fin' : ''}">${esc(stepItem.curState)}</span></td>
+        <td><span style="font-weight:700;color:var(--accent);">${esc(stepItem.symbol)}</span></td>
+        <td>${stepItem.nextState ? `<span class="st-badge">${esc(stepItem.nextState)}</span>` : '<span style="color:var(--bad);">Halt</span>'}</td>
+        <td><span style="opacity:0.8;">${esc(stepItem.remaining)}</span></td>
+        <td><span style="font-weight:600;color:${stepItem.status === 'ACCEPTED' ? 'var(--good)' : (stepItem.status === 'STUCK' || stepItem.status === 'REJECTED' ? 'var(--bad)' : 'var(--ink)')};">${esc(stepItem.status)}</span></td>
+      </tr>
+    `;
+  });
+  traceTbody.innerHTML = rowsHtml;
+}
+
+function simStepNext() {
+  if (!simState.result || !simState.result.trace) {
+    runSimulation($('#simInputStr').value.trim());
+  }
+  if (simState.curStep < simState.result.trace.length - 1) {
+    simState.curStep++;
+    updateSimulationUI();
+    redrawCanvas();
+  } else {
+    pauseAutoPlay();
+    showToast(simState.result.accepted ? 'Simulation finished: String ACCEPTED.' : 'Simulation finished: String REJECTED.', simState.result.accepted ? 'ok' : 'err');
+  }
+}
+
+function simStepPrev() {
+  if (simState.curStep > 0) {
+    simState.curStep--;
+    updateSimulationUI();
+    redrawCanvas();
+  }
+}
+
+function simReset() {
+  pauseAutoPlay();
+  simState.curStep = 0;
+  updateSimulationUI();
+  redrawCanvas();
+  showToast('Simulation reset to initial state.');
+}
+
+function toggleAutoPlay() {
+  if (simState.isPlaying) {
+    pauseAutoPlay();
+  } else {
+    startAutoPlay();
+  }
+}
+
+function startAutoPlay() {
+  simState.isPlaying = true;
+  $('#playTextSpan').textContent = 'Pause';
+  $('#playIconSpan').innerHTML = `<svg class="btn-icon" viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12"/><rect x="9.5" y="2" width="3.5" height="12"/></svg>`;
+  $('#btnSimPlay').classList.add('primary');
+
+  if (simState.curStep >= (simState.result ? simState.result.trace.length - 1 : 0)) {
+    simState.curStep = 0;
+  }
+
+  simState.timer = setInterval(() => {
+    if (simState.curStep < simState.result.trace.length - 1) {
+      simStepNext();
+    } else {
+      pauseAutoPlay();
+    }
+  }, simState.speed);
+}
+
+function pauseAutoPlay() {
+  simState.isPlaying = false;
+  clearInterval(simState.timer);
+  $('#playTextSpan').textContent = 'Auto Play';
+  $('#playIconSpan').innerHTML = `<svg class="btn-icon" viewBox="0 0 16 16"><polygon points="4,2 14,8 4,14"/></svg>`;
+  $('#btnSimPlay').classList.remove('primary');
+}
+
+// Simulator Events
+$('#btnSimRun').onclick = () => {
+  pauseAutoPlay();
+  const sim = runSimulation($('#simInputStr').value.trim());
+  if (sim && sim.trace) {
+    simState.curStep = sim.trace.length - 1;
+    updateSimulationUI();
+    redrawCanvas();
+    showToast(sim.accepted ? 'Input ACCEPTED by DFA' : 'Input REJECTED by DFA', sim.accepted ? 'ok' : 'err');
+  }
+};
+
+$('#btnQuickRun').onclick = () => {
+  $('#simInputStr').value = $('#tbQuickInput').value;
+  switchDockView('sim');
+  $('#btnSimRun').click();
+};
+
+$('#btnSimReset').onclick = simReset;
+$('#btnSimNext').onclick = () => { pauseAutoPlay(); simStepNext(); };
+$('#btnSimPrev').onclick = () => { pauseAutoPlay(); simStepPrev(); };
+$('#btnSimPlay').onclick = toggleAutoPlay;
+
+$('#simSpeedSelect').onchange = e => {
+  simState.speed = +e.target.value;
+  if (simState.isPlaying) {
+    pauseAutoPlay();
+    startAutoPlay();
+  }
+};
+
+// Quick symbol insertion
+$$('.sim-chips [data-sym]').forEach(b => {
+  b.onclick = () => {
+    $('#simInputStr').value += b.dataset.sym;
+    $('#tbQuickInput').value = $('#simInputStr').value;
+    runSimulation($('#simInputStr').value.trim());
+  };
+});
+$('#btnSimEps').onclick = () => {
+  $('#simInputStr').value = '';
+  $('#tbQuickInput').value = '';
+  runSimulation('');
+};
+$('#btnSimClear').onclick = () => {
+  $('#simInputStr').value = '';
+  $('#tbQuickInput').value = '';
+  runSimulation('');
+};
+
+$('#simInputStr').oninput = e => {
+  $('#tbQuickInput').value = e.target.value;
+  runSimulation(e.target.value.trim());
+};
+
+$('#traceTableBody').addEventListener('click', e => {
+  const tr = e.target.closest('[data-step-idx]');
+  if (tr) {
+    pauseAutoPlay();
+    simState.curStep = +tr.dataset.stepIdx;
+    updateSimulationUI();
+    redrawCanvas();
+  }
+});
+
+/* =========================================================================
+   Minimizer & Results View
+   ========================================================================= */
+
+let minTab = 'table';
+let minStep = 0;
+let minPicked = null;
+
+function renderMinimizer() {
+  const box = $('#minContainer');
+  const r = minResult;
+  if (!r || r.errors.length) {
+    box.innerHTML = `
+      <div style="padding:24px;background:var(--canvas);border:1px dashed var(--line);border-radius:4px;color:var(--ink2);">
+        <strong style="color:var(--ink);display:block;margin-bottom:6px;font-size:14px;">Automaton Not Ready for Minimization</strong>
+        <p>${r && r.errors.length ? esc(r.errors.join(' ')) : 'Please add states and transitions to the canvas.'}</p>
+      </div>
+    `;
+    return;
+  }
+
+  const total = dfa.states.length;
+  const reach = r.order.length;
+  const minCount = r.min.states.length;
+
+  const subtabs = [
+    ['reach', '1. Reachable States'],
+    ['table', '2. Table-Filling'],
+    ['part', '3. Partition Refinement'],
+    ['min', '4. Minimized DFA']
+  ];
+
+  let html = `
+    <div class="summary-bar">
+      <div class="stat-box"><b>${total}</b><span>Drawn States</span></div>
+      <span class="arrowsep">→</span>
+      <div class="stat-box"><b>${reach}</b><span>Reachable</span></div>
+      <span class="arrowsep">→</span>
+      <div class="stat-box"><b style="color:var(--accent);">${minCount}</b><span>Minimal DFA</span></div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+        <span style="color:${r.verified ? 'var(--good)' : 'var(--bad)'};font-weight:600;">
+          ${r.verified ? 'Language Equivalence Verified' : 'Language Discrepancy Detected'}
+        </span>
+      </div>
+    </div>
+
+    <div>
+      <div class="min-subtabs" role="tablist">
+        ${subtabs.map(t => `
+          <button class="min-subtab-btn ${minTab === t[0] ? 'active' : ''}" data-min-tab="${t[0]}">${t[1]}</button>
+        `).join('')}
+      </div>
+      <div class="min-subpanel">
+        ${renderMinSubpanel()}
+      </div>
+    </div>
+  `;
+  box.innerHTML = html;
+}
+
+function renderMinSubpanel() {
+  const r = minResult;
+  if (minTab === 'reach') {
+    return `
+      <div>
+        <h3 style="margin-bottom:8px;">Reachable from Initial State (${esc(r.order[0])})</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.bfs.map(s => `<span class="chip cls">${esc(s)}</span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <h3 style="margin-bottom:8px;">Unreachable (Eliminated)</h3>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          ${r.unreachable.length ? r.unreachable.map(s => `<span class="chip dim">${esc(s)}</span>`).join('') : '<span style="color:var(--ink2);">None. All states are reachable.</span>'}
+        </div>
+      </div>
+    `;
+  } else if (minTab === 'table') {
+    const T = r.table;
+    const S = T.states;
+    const n = S.length;
+    if (n < 2) return '<p style="color:var(--ink2);">Only one state: no pairs to distinguish.</p>';
+
+    const mk = new Map(T.marks.map(m => [m.i + ',' + m.j, m]));
+    let st = `<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;"><span style="font-weight:700;">Round:</span>`;
+    for (let i = 0; i <= T.maxRound; i++) {
+      st += `<button class="btn sm ${minStep === i ? 'primary' : ''}" data-min-step="${i}">${i}</button>`;
+    }
+    st += `</div>`;
+
+    let tb = `<div style="overflow:auto;"><table class="tf"><thead><tr><th></th>${S.slice(0, n - 1).map(s => `<th>${esc(s)}</th>`).join('')}</tr></thead><tbody>`;
+    for (let i = 1; i < n; i++) {
+      tb += `<tr><th>${esc(S[i])}</th>`;
+      for (let j = 0; j < n - 1; j++) {
+        if (j >= i) { tb += '<td class="void"></td>'; continue; }
+        const m = mk.get(i + ',' + j);
+        const isMarked = m && m.round <= minStep;
+        if (isMarked) {
+          tb += `<td><button class="cell x">X<sup>${m.round}</sup></button></td>`;
+        } else if (minStep === T.maxRound) {
+          tb += `<td><button class="cell eq">=</button></td>`;
+        } else {
+          tb += `<td><button class="cell">·</button></td>`;
+        }
+      }
+      tb += `</tr>`;
+    }
+    tb += `</tbody></table></div>`;
+    return st + tb;
+  } else if (minTab === 'part') {
+    const rounds = r.partition.rounds;
+    return `
+      <div>
+        <h3 style="margin-bottom:6px;">Partition Refinement Steps (Moore's Method)</h3>
+        <p style="color:var(--ink2);margin-bottom:10px;">Successively splits blocks of states that behave differently on alphabet transitions.</p>
+        <div style="display:grid;gap:10px;">
+          ${rounds.map((rnd, k) => `
+            <div style="background:var(--win);padding:10px;border-radius:4px;border:1px solid var(--line);">
+              <b>Round ${k}:</b>
+              <div class="blocks" style="margin-top:6px;">
+                ${rnd.blocks.map((b, bi) => `<span class="block"><i>B${bi+1}</i>{${b.join(', ')}}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else if (minTab === 'min') {
+    return `
+      <div>
+        <h3 style="margin-bottom:6px;">Minimized DFA States &amp; Transitions</h3>
+        <p style="color:var(--ink2);margin-bottom:10px;">Equivalence classes merged into canonical minimal states.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          ${r.min.states.map(s => `
+            <span class="chip cls" style="padding:4px 10px;">
+              <b>${s.id}</b> = {${s.members.join(', ')}} ${s.initial ? '→ (init)' : ''} ${s.final ? '* (final)' : ''}
+            </span>
+          `).join('')}
+        </div>
+        <div style="overflow:auto;">
+          <table class="dt">
+            <thead><tr><th>State</th><th>Merged Members</th>${r.alpha.map(a => `<th>on '${a}'</th>`).join('')}</tr></thead>
+            <tbody>
+              ${r.min.states.map(s => `
+                <tr>
+                  <th>${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${s.id}</th>
+                  <td>{${s.members.join(', ')}}</td>
+                  ${r.alpha.map(a => {
+                    const tr = r.min.trans.find(t => t.from === s.id && t.syms.includes(a));
+                    return `<td>${tr ? tr.to : '—'}</td>`;
+                  }).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+  return '';
+}
+
+$('#minContainer').addEventListener('click', e => {
+  const tabBtn = e.target.closest('[data-min-tab]');
+  if (tabBtn) {
+    minTab = tabBtn.dataset.minTab;
+    renderMinimizer();
+    return;
+  }
+  const stepBtn = e.target.closest('[data-min-step]');
+  if (stepBtn) {
+    minStep = +stepBtn.dataset.minStep;
+    renderMinimizer();
+    return;
+  }
+});
+
+/* =========================================================================
+   Transition Table View
+   ========================================================================= */
+
+function renderTransitionTable() {
+  const box = $('#tableContainer');
+  const alpha = getAlphabet();
+  const model = runModelOf(dfa);
+  const errs = validate(dfa);
+
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <h3 style="margin-bottom:4px;">Automaton Transition Table δ(q, a)</h3>
+        <p style="color:var(--ink2);font-size:12px;">Shows deterministic state transitions for all symbols in Σ = {${alpha.join(', ')}}.</p>
+      </div>
+      <div>
+        <span style="font-size:12px;color:${errs.length ? 'var(--bad)' : 'var(--good)'};font-weight:600;">
+          ${errs.length ? 'Incomplete / Invalid DFA: ' + esc(errs[0]) : 'Complete DFA: Every state has valid transitions'}
+        </span>
+      </div>
+    </div>
+
+    <div style="overflow:auto;margin-top:10px;">
+      <table class="dt" style="width:100%;max-width:800px;">
+        <thead>
+          <tr>
+            <th style="width:140px;">State</th>
+            <th style="width:100px;">Type</th>
+            ${alpha.map(a => `<th>Input '${esc(a)}'</th>`).join('')}
+          </tr>
+        </thead>
+        <tbody>
+          ${dfa.states.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--ink2);">No states created yet.</td></tr>' : ''}
+          ${dfa.states.map(s => `
+            <tr>
+              <th scope="row" style="font-weight:700;">
+                ${s.initial ? '→ ' : ''}${s.final ? '* ' : ''}${esc(s.id)}
+              </th>
+              <td style="font-size:11px;color:var(--ink2);">
+                ${s.initial ? 'Initial' : ''}${s.initial && s.final ? ', ' : ''}${s.final ? 'Accepting' : ''}${!s.initial && !s.final ? 'Normal' : ''}
+              </td>
+              ${alpha.map(a => {
+                const target = model.delta[s.id] ? model.delta[s.id][a] : undefined;
+                return `<td>${target ? `<span style="font-weight:700;color:var(--accent);">${esc(target)}</span>` : '<span style="color:var(--ink3);">— (stuck)</span>'}</td>`;
+              }).join('')}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  box.innerHTML = html;
+}
+
+/* =========================================================================
+   Dock View Switching & Resizing Splitter
+   ========================================================================= */
+
+function switchDockView(tabName) {
+  activeDockTab = tabName;
+  $$('.view-tab-btn').forEach(b => {
+    const isAct = b.dataset.view === tabName;
+    b.classList.toggle('active', isAct);
+    b.setAttribute('aria-selected', isAct ? 'true' : 'false');
+  });
+
+  $('#viewSim').classList.toggle('active', tabName === 'sim');
+  $('#viewMin').classList.toggle('active', tabName === 'min');
+  $('#viewTable').classList.toggle('active', tabName === 'table');
+
+  const titles = {
+    sim: 'Interactive Simulator & Execution Trace',
+    min: 'DFA Minimization, Reachability & Equivalence',
+    table: 'Complete Transition Table Matrix δ(q, a)'
+  };
+  $('#splitterTitle').textContent = titles[tabName] || 'Panel';
+
+  $('#dockPanel').classList.remove('collapsed');
+  $('#dockToggle').textContent = 'Collapse';
+}
+
+$$('.view-tab-btn').forEach(b => {
+  b.addEventListener('click', () => switchDockView(b.dataset.view));
+});
+
+// Resizable Splitter
+const splitter = $('#splitter');
+const dockPanel = $('#dockPanel');
+let splitterDragging = false;
+let splitterStartY = 0;
+let splitterStartH = 330;
+
+splitter.addEventListener('pointerdown', e => {
+  if (e.target.closest('.splitter-toggle')) return;
+  splitterDragging = true;
+  splitterStartY = e.clientY;
+  splitterStartH = dockPanel.offsetHeight;
+  splitter.classList.add('active');
+  try { splitter.setPointerCapture(e.pointerId); } catch (_) {}
+});
+
+splitter.addEventListener('pointermove', e => {
+  if (!splitterDragging) return;
+  const dy = splitterStartY - e.clientY;
+  const newH = Math.max(80, Math.min(window.innerHeight * 0.75, splitterStartH + dy));
+  dockPanel.style.height = newH + 'px';
+});
+
+splitter.addEventListener('pointerup', () => {
+  splitterDragging = false;
+  splitter.classList.remove('active');
+});
+
+// Toggle collapse dock
+$('#dockToggle').addEventListener('click', () => {
+  const isCollapsed = dockPanel.classList.toggle('collapsed');
+  $('#dockToggle').textContent = isCollapsed ? 'Expand' : 'Collapse';
+});
+
+// Double click splitter header to toggle
+splitter.addEventListener('dblclick', e => {
+  if (e.target.closest('.splitter-toggle')) return;
+  $('#dockToggle').click();
+});
+
+/* =========================================================================
+   Menu Bar Configuration
+   ========================================================================= */
+
+const MENUS = {
+  File: [
+    ['New Automaton', clearAutomaton, 'Ctrl+N'],
+    ['-'],
+    ['Example: 7 States (Unreachable State)', () => loadExample('seven')],
+    ['Example: Binary Ending in 0', () => loadExample('ends0')],
+    ['Example: Missing Transitions (Dead State)', () => loadExample('partial')],
+    ['-'],
+    ['Export / Import JSON…', jsonDialog]
+  ],
+  Edit: [
+    ['Undo', undo, 'Ctrl+Z'],
+    ['Redo', redo, 'Ctrl+Y'],
+    ['-'],
+    ['Select Tool', () => setTool('select'), 'V'],
+    ['Move Machine Tool', () => setTool('move'), 'M'],
+    ['State Creator', () => setTool('state'), 'S'],
+    ['Transition Creator', () => setTool('trans'), 'T'],
+    ['Delete Tool', () => setTool('del'), 'D']
+  ],
+  Alphabet: [
+    ['Binary Alphabet Σ = {0, 1}', () => { definedAlpha = ['0', '1']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {0, 1}', 'ok'); }],
+    ['Letters Σ = {a, b}', () => { definedAlpha = ['a', 'b']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {a, b}', 'ok'); }],
+    ['Letters Σ = {a, b, c}', () => { definedAlpha = ['a', 'b', 'c']; autoAlpha = false; $('#chkAutoAlpha').checked = false; afterChange(true); showToast('Alphabet set to {a, b, c}', 'ok'); }],
+    ['Auto-Detect from Transitions', () => { autoAlpha = true; $('#chkAutoAlpha').checked = true; syncAlphabetFromTransitions(); afterChange(true); showToast('Auto-detect alphabet enabled.', 'ok'); }]
+  ],
+  Input: [
+    ['Run Input Simulator', () => { switchDockView('sim'); $('#btnSimRun').click(); }],
+    ['Step Forward', simStepNext],
+    ['Reset Simulation', simReset]
+  ],
+  View: [
+    ['Fit Automaton to Window', fitView],
+    ['Center View at (0, 0)', centerView],
+    ['Zoom to 100%', () => setZoom(1)],
+    ['-'],
+    ['Theme: Dark', () => setTheme('dark')],
+    ['Theme: Light', () => setTheme('light')],
+    ['Theme: High Contrast', () => setTheme('high-contrast')]
+  ],
+  Convert: [
+    ['Minimize DFA', () => { switchDockView('min'); recomputeAll(); showToast('DFA minimized.', 'ok'); }]
+  ],
+  Help: [
+    ['Automata Simulator Guide', helpDialog]
+  ]
+};
+
+(function buildMenus() {
+  const bar = $('#menubar');
+  Object.keys(MENUS).forEach(name => {
+    const wrap = document.createElement('div');
+    wrap.className = 'menuwrap';
+    wrap.innerHTML = `<button class="menubtn" aria-haspopup="true" aria-expanded="false">${esc(name)}</button><div class="menu" role="menu" hidden></div>`;
+    const btn = wrap.firstChild;
+    const menu = wrap.lastChild;
+
+    MENUS[name].forEach(it => {
+      if (it[0] === '-') {
+        menu.appendChild(document.createElement('hr'));
+        return;
+      }
+      const b = document.createElement('button');
+      b.setAttribute('role', 'menuitem');
+      b.innerHTML = `<span>${esc(it[0])}</span>${it[2] ? `<span class="shortcut">${esc(it[2])}</span>` : ''}`;
+      b.addEventListener('click', () => { closeMenus(); it[1](); });
+      menu.appendChild(b);
+    });
+
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = menu.hidden;
+      closeMenus();
+      if (open) {
+        menu.hidden = false;
+        btn.setAttribute('aria-expanded', 'true');
+        menu.querySelector('button').focus();
+      }
+    });
+
+    bar.appendChild(wrap);
+  });
+})();
+
+function closeMenus() {
+  $$('.menu').forEach(m => { m.hidden = true; });
+  $$('.menubtn').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menuwrap')) closeMenus();
+});
+
+/* ---------- Dialogs ---------- */
+let activeDlg = null;
+function closeDialog() {
+  if (!activeDlg) return;
+  activeDlg.el.remove();
+  activeDlg = null;
+}
+
+function openDialog(o) {
+  closeDialog();
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = `
+    <div class="dlg ${o.wide ? 'wide' : ''}" role="dialog" aria-modal="true">
+      <div class="dlg-title">
+        <span>${esc(o.title || 'Dialog')}</span>
+        <button class="x" aria-label="Close">×</button>
+      </div>
+      <div class="dlg-body">${o.body}</div>
+      <div class="dlg-btns"></div>
+    </div>
+  `;
+  const btns = ov.querySelector('.dlg-btns');
+  const cancelBtn = o.buttons.find(b => b.cancel) || o.buttons[o.buttons.length - 1];
+
+  o.buttons.forEach(b => {
+    const el = document.createElement('button');
+    el.className = 'btn' + (b.primary ? ' primary' : '');
+    el.textContent = b.label;
+    el.onclick = () => {
+      const res = b.act ? b.act() : undefined;
+      if (res !== false) closeDialog();
+    };
+    btns.appendChild(el);
+  });
+
+  ov.querySelector('.x').onclick = () => closeDialog();
+  ov.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDialog();
+  });
+
+  document.body.appendChild(ov);
+  activeDlg = { el: ov };
+  const firstInput = ov.querySelector('input, textarea, button.primary');
+  if (firstInput) firstInput.focus();
+}
+
+function jsonDialog() {
+  const data = JSON.stringify({ states: dfa.states, trans: dfa.trans, definedAlpha, autoAlpha }, null, 2);
+  openDialog({
+    title: 'Automaton JSON Import / Export',
+    wide: true,
+    body: `
+      <p style="color:var(--ink2);">Copy the JSON below to save your DFA, or paste saved JSON and click Load.</p>
+      <div class="field">
+        <label for="jsonTa">DFA Specification JSON</label>
+        <textarea id="jsonTa" spellcheck="false">${esc(data)}</textarea>
+      </div>
+      <p id="jsonErr" style="color:var(--bad);font-weight:600;min-height:1.2em;"></p>
+    `,
+    buttons: [
+      {
+        label: 'Copy to Clipboard',
+        act: () => {
+          const ta = $('#jsonTa');
+          ta.select();
+          navigator.clipboard.writeText(ta.value).then(() => {
+            $('#jsonErr').style.color = 'var(--good)';
+            $('#jsonErr').textContent = 'Copied to clipboard!';
+          });
+          return false;
+        }
+      },
+      {
+        label: 'Load JSON',
+        primary: true,
+        act: () => {
+          try {
+            const parsed = JSON.parse($('#jsonTa').value);
+            if (!Array.isArray(parsed.states) || !Array.isArray(parsed.trans)) {
+              throw new Error('JSON must contain "states" and "trans" arrays.');
+            }
+            // Enforce only one state as initial
+            let foundInit = false;
+            parsed.states.forEach(st => {
+              if (st.initial) {
+                if (foundInit) st.initial = false;
+                else foundInit = true;
+              }
+            });
+
+            mutate(() => {
+              dfa = { states: parsed.states, trans: parsed.trans };
+              if (parsed.definedAlpha) definedAlpha = parsed.definedAlpha;
+              if (parsed.autoAlpha !== undefined) autoAlpha = parsed.autoAlpha;
+              sel = null;
+            });
+            afterChange(true);
+            fitView();
+            showToast('Automaton loaded from JSON.', 'ok');
+            return true;
+          } catch (err) {
+            $('#jsonErr').style.color = 'var(--bad)';
+            $('#jsonErr').textContent = 'Error: ' + err.message;
+            return false;
+          }
+        }
+      },
+      { label: 'Close', cancel: true }
+    ]
+  });
+}
+
+function helpDialog() {
+  openDialog({
+    title: 'Automata Studio Guide & Capabilities',
+    wide: true,
+    body: `
+      <div style="display:grid;gap:12px;line-height:1.6;">
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">1. Full Page Utilization &amp; Workspace</h4>
+          <p>The workspace dynamically utilizes the entire window. Drag the horizontal splitter bar to adjust the simulation and analysis dock height.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">2. Move Machine Tool (M)</h4>
+          <p>Select the <b>Move Tool</b> in the toolbar (or press <kbd>M</kbd>). Click and drag anywhere to move the entire generated automaton machine across the canvas.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">3. States &amp; Visual Styles</h4>
+          <p>• <b>Create States:</b> Pick the State Tool (<kbd>S</kbd>) and click canvas, or double-click empty space.<br>
+          • <b>Initial State (Green):</b> Click "Set as Initial" in inspector. A prominent green arrow appears pointing into the state. Only one state can be initial.<br>
+          • <b>Final / Accepting State (Yellow):</b> Click "Mark Final / Accepting" in inspector or double-click the state. Renders with yellow fill and double concentric circles.<br>
+          • <b>Alphabet Σ:</b> Use the Σ = { ... } widget in the toolbar to specify custom symbols.<br>
+          • <b>Transitions:</b> Drag between states with the Transition Tool (<kbd>T</kbd>) and enter comma-separated symbols.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">4. Interactive Simulation &amp; Trace</h4>
+          <p>Enter an input string and click <b>Run</b> or <b>Step Forward</b> to watch the machine execute step-by-step with real-time state glow, active transition animation, tape read head positioning, and a clean ACCEPTED or REJECTED result.</p>
+        </div>
+        <div>
+          <h4 style="color:var(--accent);margin-bottom:4px;">5. Themes</h4>
+          <p>Toggle between <b>Dark</b>, <b>Light</b>, and <b>High Contrast</b> modes using the Theme button in the top right header.</p>
+        </div>
+      </div>
+    `,
+    buttons: [{ label: 'Got It', primary: true }]
+  });
+}
+
+/* ---------- Theme Switcher (Dark, Light, High Contrast) ---------- */
+function setTheme(name) {
+  currentTheme = name;
+  document.documentElement.setAttribute('data-theme', name);
+  const labels = {
+    'dark': 'Theme: Dark',
+    'light': 'Theme: Light',
+    'high-contrast': 'Theme: High Contrast'
+  };
+  $('#themeBtnLabel').textContent = labels[name] || 'Theme';
+  showToast(`Switched to ${labels[name]}.`, 'ok');
+}
+
+function cycleTheme() {
+  if (currentTheme === 'dark') setTheme('light');
+  else if (currentTheme === 'light') setTheme('high-contrast');
+  else setTheme('dark');
+}
+
+$('#btnThemeToggle').onclick = cycleTheme;
+$('#btnHelpTop').onclick = helpDialog;
+
+/* ---------- Initial Boot ---------- */
+setTool('select');
+loadExample('seven');
+runSimulation('0101', false);
+</script>
+</body>
+</html>
